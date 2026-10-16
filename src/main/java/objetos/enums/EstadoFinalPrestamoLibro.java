@@ -1,6 +1,15 @@
 package objetos.enums;
 
 public enum EstadoFinalPrestamoLibro {
-    MOROSO,
-    Puntual
+    MOROSO("Moroso"),
+    Puntual("Puntual");
+
+    private final String descripcion;
+
+    EstadoFinalPrestamoLibro(String descripcion) {
+        this.descripcion = descripcion;
+    }
+    public String getDescripcion() {
+        return descripcion;
+    }
 }

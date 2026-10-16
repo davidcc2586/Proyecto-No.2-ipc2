@@ -28,4 +28,16 @@
     <!--
     <Manager pathname="SESSIONS.ser" />
     -->
+
+    <Resource name="jdbc/ColegioPrestigioso"
+              auth="Container"
+              type="javax.sql.DataSource"
+              factory="org.apache.tomcat.dbcp.dbcp2.BasicDataSourceFactory"
+              driverClassName="com.mysql.cj.jdbc.Driver"
+              url="jdbc:mysql://localhost:3306/ColegioPrestigioso"
+              username="josue"
+              password="josue100000"
+              maxTotal="20"
+              maxIdle="10"
+              initialSize="5"/>
 </Context>

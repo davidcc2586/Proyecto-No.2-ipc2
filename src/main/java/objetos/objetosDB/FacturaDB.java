@@ -1,6 +1,6 @@
 package objetos.objetosDB;
 
-import objetos.objetosClases.Factura;
+import objetos.objetosResponse.Factura;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,20 +12,29 @@ import java.util.List;
 public class FacturaDB {
 
     public List<Factura> todosLasFacturas() throws SQLException {
-        Connection connection = DBConnectionSingleton.getInstance().getConnection();
-        List<Factura> facturas = new ArrayList<>();
+        List<Factura> facturaResponses = new ArrayList<>();
         String sqlSolicitarFacturas = "SELECT * FROM Factura";
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlSolicitarFacturas);
+        try (Connection connection = ConnectionDB.getConexion();
+             PreparedStatement preparedStatement = connection.prepareStatement(sqlSolicitarFacturas);
              ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()){
-                facturas.add(crearFactura(resultSet));
+                facturaResponses.add(crearFactura(resultSet));
             }
         }
 
-        return facturas;
+        return facturaResponses;
     }
-
+    public void ingresarNuevaFactura(Factura factura) throws SQLException{
+        String sqlIngresarFactura = "insert into Factura(idPago, nombreConsumidor, NIT) VALUES(?,?,?)";
+        try (Connection connection = ConnectionDB.getConexion();
+             PreparedStatement preparedStatement = connection.prepareStatement(sqlIngresarFactura)){
+            preparedStatement.setInt(1, factura.getIdPago());
+            preparedStatement.setString(2, factura.getNombreConsumidor());
+            preparedStatement.setString(3, factura.getNit());
+            preparedStatement.executeUpdate();
+        }
+    }
     private Factura crearFactura(ResultSet resultSet) throws SQLException{
         int idFactura = resultSet.getInt("idFactura");
         int idPago = resultSet.getInt("idPago");

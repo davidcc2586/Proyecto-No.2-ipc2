@@ -1,7 +1,9 @@
+DROP DATABASE IF EXISTS ColegioPrestigioso;
 CREATE DATABASE IF NOT EXISTS ColegioPrestigioso;
 USE ColegioPrestigioso;
 CREATE TABLE ConfiguracionColegio(
-    anioLectivo INT NOT NULL PRIMARY KEY
+    anioLectivo INT NOT NULL PRIMARY KEY UNIQUE,
+    estado ENUM('ACTIVO', 'INACTIVO') DEFAULT 'INACTIVO'
 );
 CREATE TABLE Usuario(
     idUsuario INT AUTO_INCREMENT PRIMARY KEY,
@@ -11,6 +13,7 @@ CREATE TABLE Usuario(
     fechaNacimiento DATE NOT NULL,
     usuario VARCHAR(50) NOT NULL,
     clave VARCHAR(50) NOT NULL,
+    estado ENUM('ACTIVO', 'INACTIVO') DEFAULT 'ACTIVO',
     rol ENUM('SUPERADMIN','ADMIN','SECRETARIO','BIBLIOTECARIO','PERSONAL','MAESTRO')  DEFAULT 'PERSONAL',
     fechaContratacion DATE NOT NULL,
     salario DOUBLE(10,2) NOT NULL
@@ -35,19 +38,18 @@ CREATE TABLE Estudiante(
 CREATE TABLE Carrera(
     idCarrera INT AUTO_INCREMENT PRIMARY KEY,
     nombreCarrera VARCHAR(100),
-    estadoCarrera ENUM('ACTIVO', 'INACTIVO')
+    estado ENUM('ACTIVO', 'INACTIVO') DEFAULT 'ACTIVO'
 );
 CREATE TABLE Grado(
     idGrado INT AUTO_INCREMENT PRIMARY KEY,
+    nombreGrado varchar(150) NOT NULL,
     grado ENUM('PRE_PRIMARIA', 'PRIMARIA', 'BASICO', 'DIVERSIFICADO'),
-    idCarrera INT,
+    idCarrera INT DEFAULT 0,
     FOREIGN KEY(idCarrera) REFERENCES Carrera(idCarrera)
 );
 CREATE TABLE Curso(
     idCurso INT AUTO_INCREMENT PRIMARY KEY,
-    IdGrado INT NOT NULL,
-    nombreCurso VARCHAR(50) NOT NULL,
-    FOREIGN KEY(IdGrado) REFERENCES Grado(idGrado)
+    nombreCurso VARCHAR(50) NOT NULL
 );
 CREATE TABLE CurriculumCursosGrado(
     idGrado INT NOT NULL,
@@ -100,8 +102,9 @@ CREATE TABLE AsignacionMaestrosSeccion(
 );
 CREATE TABLE Libro(
     idLibro INT AUTO_INCREMENT PRIMARY KEY,
+    estado ENUM('ACTIVO', 'INACTIVO') DEFAULT 'ACTIVO',
     autor VARCHAR(50) NOT NULL,
-    anio VARCHAR(4) NOT NULL,
+    anio INT NOT NULL,
     titulo VARCHAR(50) NOT NULL,
     editorial VARCHAR(50) NOT NULL,
     cantidad INT NOT NULL DEFAULT 0
@@ -110,13 +113,13 @@ CREATE TABLE PrestamoLibro(
     idPrestamoLibro INT AUTO_INCREMENT PRIMARY KEY,
     idLibro INT NOT NULL,
     idEstudiante INT NOT NULL,
-    estadoPrestamo ENUM('PRESTADO','ENTREGADO'),
-    estadoFinal ENUM('MOROSO', 'Puntual'),
+    estadoPrestamo ENUM('PRESTADO','ENTREGADO') DEFAULT 'PRESTADO',
+    estadoFinal ENUM('MOROSO', 'PUNTUAL') DEFAULT 'PUNTUAL',
     costoDia DOUBLE(10,2) NOT NULL,
     fechaPrestamo DATE NOT NULL,
     fechaEstimadaDevolucion DATE NOT NULL,
     fechaDevolucion DATE,
-    multa DOUBLE(10,2) NOT NULL,
+    multa DOUBLE(10,2),
     FOREIGN KEY(idLibro) REFERENCES Libro(idLibro),
     FOREIGN KEY(idEstudiante) REFERENCES Estudiante(idEstudiante)
 );
@@ -137,4 +140,14 @@ CREATE TABLE Factura(
     nombreConsumidor VARCHAR(50) default 'CONSUMIDOR FINAL',
     NIT VARCHAR(20) DEFAULT 'CF',
     FOREIGN KEY(idPago)REFERENCES Pago(idPago)
+);
+CREATE TABLE DetallePagoColegiatura (
+    idDetalle INT AUTO_INCREMENT PRIMARY KEY,
+    idPago INT NOT NULL,
+    idEstudiante INT NOT NULL,
+    anio INT NOT NULL,
+    mes INT NOT NULL,
+    FOREIGN KEY(idPago) REFERENCES Pago(idPago) ON DELETE CASCADE,
+    FOREIGN KEY(idEstudiante) REFERENCES Estudiante(idEstudiante) ON DELETE CASCADE,
+    UNIQUE(anio, mes, idPago)
 );

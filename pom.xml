@@ -20,19 +20,25 @@
     </properties>
 
     <dependencies>
-        <!-- API completa de Jakarta EE -->
-        <dependency>
-            <groupId>jakarta.platform</groupId>
-            <artifactId>jakarta.jakartaee-api</artifactId>
-            <version>${jakartaee}</version>
-            <scope>provided</scope>
-        </dependency>
-
         <!-- Jakarta REST API -->
         <dependency>
             <groupId>jakarta.ws.rs</groupId>
             <artifactId>jakarta.ws.rs-api</artifactId>
             <version>3.1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-api</artifactId>
+            <version>10.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Driver de MySQL -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>9.4.0</version>
         </dependency>
 
         <!-- Jersey Implementation -->
@@ -70,7 +76,7 @@
             <version>${restapi}</version>
         </dependency>
 
-        <!-- Database Pool (Tomcat) -->
+        <!-- Database Pool (Tomcat DBCP) -->
         <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-jdbc</artifactId>
@@ -78,11 +84,25 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Driver de MySQL -->
+        <!-- JAXB API (Versión 2.3.1 compatible con javax.* que espera Jackson) -->
         <dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
-            <version>9.4.0</version>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+
+        <!-- JAXB Runtime -->
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+
+        <!-- Soporte de anotaciones JAXB para Jackson -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-jaxb-annotations</artifactId>
+            <version>2.17.0</version>
         </dependency>
 
         <!-- Pruebas Unitarias -->
@@ -101,6 +121,7 @@
     </dependencies>
 
     <build>
+        <finalName>Proyecto_2_ipc2</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
