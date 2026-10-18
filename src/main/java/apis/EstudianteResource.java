@@ -24,8 +24,8 @@ public class EstudianteResource {
     }
 
     @GET
-    @Path("estudiantesSeccion/{idCurso}")
-    public Response estudiantesSeccion(@PathParam("idCurso") int idSeccion){
+    @Path("estudiantesSeccion/{idSeccion}")
+    public Response estudiantesSeccion(@PathParam("idSeccion") int idSeccion){
         try {
             EstudianteServicio estudianteServicio = new EstudianteServicio();
             return Response.ok(estudianteServicio.estudiantesSeccion(idSeccion)).build();

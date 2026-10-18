@@ -1,5 +1,6 @@
 package objetos.objetosDB;
 
+import objetos.objetosRequest.CurriculumCursosGradoRequest;
 import objetos.objetosResponse.CurriculumCursosGrado;
 import objetos.objetosResponse.Curso;
 
@@ -40,12 +41,12 @@ public class CurriculumCursosGradoDB {
 
         return CurriculumsCursosGrado;
     }
-    public void ingresarNuevoCursoCurriculum(CurriculumCursosGrado curriculumCursosGrado) throws SQLException{
+    public void ingresarNuevoCursoCurriculum(CurriculumCursosGradoRequest curriculumCursosGrado) throws SQLException{
         String sqlIngresar = "insert into CurriculumCursosGrado(idGrado, idCurso) VALUES(?,?)";
         try (Connection connection = ConnectionDB.getConexion();
              PreparedStatement preparedStatement = connection.prepareStatement(sqlIngresar)){
-            preparedStatement.setInt(1, curriculumCursosGrado.getIdGrado());
-            preparedStatement.setInt(1, curriculumCursosGrado.getIdCurso());
+            preparedStatement.setInt(1, Integer.parseInt(curriculumCursosGrado.getIdGrado()));
+            preparedStatement.setInt(2, Integer.parseInt(curriculumCursosGrado.getIdCurso()));
             preparedStatement.executeUpdate();
         }
     }
