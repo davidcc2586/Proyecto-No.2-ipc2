@@ -6,6 +6,7 @@ import objetos.exceptions.ValidacionException;
 import objetos.objetosRequest.UsuarioActualizarRequest;
 import objetos.objetosResponse.Usuario;
 
+import javax.swing.text.html.Option;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,6 +14,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class UsuarioDB {
 
@@ -114,6 +116,19 @@ public class UsuarioDB {
             preparedStatement.setInt(2,idUsuario);
             preparedStatement.executeUpdate();
         }
+    }
+
+    public Optional<Usuario> obtenerUsuario(int idUsuario) throws SQLException{
+        Optional<Usuario> usuario;
+        String sql = "SELECT * FROM Usuario WHERE idUsuario = ?";
+        try (Connection connection = ConnectionDB.getConexion();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+            preparedStatement.setInt(1, idUsuario);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+            usuario = Optional.of(crearUsuario(resultSet));
+        }
+        return usuario;
     }
 
     private Usuario crearUsuario(ResultSet resultSet) throws SQLException{

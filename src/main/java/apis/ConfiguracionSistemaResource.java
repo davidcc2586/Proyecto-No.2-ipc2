@@ -26,7 +26,7 @@ public class ConfiguracionSistemaResource {
 
     @GET
     @Path("añosLectivos")
-    public Response cambiarAnioLectivo(){
+    public Response anioLectivo(){
         try {
             ConfiguracionColegioServicio configuracionColegioServicio = new ConfiguracionColegioServicio();
             return Response.ok(configuracionColegioServicio.obtenerAñosLectivos()).build();

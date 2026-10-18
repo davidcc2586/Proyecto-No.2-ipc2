@@ -29,10 +29,10 @@ CREATE TABLE Estudiante(
     anioInscripcion int NOT NULL,
     estado ENUM('ACTIVO', 'INACTIVO', 'GRADUADO') DEFAULT 'ACTIVO',
     tipoSangre VARCHAR(5) NOT NULL,
-    alergias TEXT,
-    nombreEncargado VARCHAR(100) NOT NULL,
-    telefonoEncargado VARCHAR(15) NOT NULL,
-    correoEncargado VARCHAR(100),
+    alergias VARCHAR(100) DEFAULT 'Ninguna',
+    nombreEncargado VARCHAR(100) DEFAULT 'Ninguna',
+    telefonoEncargado VARCHAR(15) DEFAULT 'Ninguna',
+    correoEncargado VARCHAR(100) DEFAULT 'Ninguna',
     FOREIGN KEY(anioInscripcion) REFERENCES ConfiguracionColegio(anioLectivo)
 );
 CREATE TABLE Carrera(
@@ -49,7 +49,8 @@ CREATE TABLE Grado(
 );
 CREATE TABLE Curso(
     idCurso INT AUTO_INCREMENT PRIMARY KEY,
-    nombreCurso VARCHAR(50) NOT NULL
+    nombreCurso VARCHAR(50) NOT NULL,
+    estado ENUM('ACTIVO', 'INACTIVO') DEFAULT 'ACTIVO'
 );
 CREATE TABLE CurriculumCursosGrado(
     idGrado INT NOT NULL,
@@ -63,6 +64,7 @@ CREATE TABLE Seccion(
     idGrado INT NOT NULL,
     anio INT NOT NULL,
     seccion ENUM('A','B','C','D','E','F','G','H','I','J','K') NOT NULL,
+    UNIQUE(idGrado,anio,seccion),
     FOREIGN KEY(idGrado) REFERENCES Grado(idGrado),
     FOREIGN KEY(anio) REFERENCES ConfiguracionColegio(anioLectivo)
 );
@@ -79,7 +81,7 @@ CREATE TABLE Actividad (
 CREATE TABLE NotaActividad (
     idActividad INT NOT NULL,
     idEstudiante INT NOT NULL,
-    punteoObtenido DOUBLE(5,2) NOT NULL DEFAULT 0.00,
+    punteoObtenido DOUBLE(5,2) DEFAULT 0.00,
     PRIMARY KEY (idActividad, idEstudiante),
     FOREIGN KEY (idActividad) REFERENCES Actividad(idActividad) ON DELETE CASCADE,
     FOREIGN KEY (idEstudiante) REFERENCES Estudiante(idEstudiante)
@@ -93,11 +95,11 @@ CREATE TABLE AsignacionEstudiantes(
 );
 CREATE TABLE AsignacionMaestrosSeccion(
     idSeccion INT NOT NULL,
-    idMaestro INT NOT NULL,
     idCurso INT NOT NULL,
-    PRIMARY KEY(idSeccion,idMaestro),
-    FOREIGN KEY(idSeccion) REFERENCES Seccion(idSeccion),
-    FOREIGN KEY(idCurso) REFERENCES Curso(idCurso),
+    idMaestro INT NOT NULL,
+    PRIMARY KEY(idSeccion, idCurso),
+    FOREIGN KEY(idSeccion) REFERENCES Seccion(idSeccion) ON DELETE CASCADE,
+    FOREIGN KEY(idCurso) REFERENCES Curso(idCurso) ON DELETE CASCADE,
     FOREIGN KEY(idMaestro) REFERENCES Usuario(idUsuario)
 );
 CREATE TABLE Libro(

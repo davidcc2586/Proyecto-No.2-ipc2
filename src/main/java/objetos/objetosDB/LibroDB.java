@@ -135,6 +135,20 @@ public class LibroDB {
         }
         return librosResumen;
     }
+
+    public int cantidadLibrosRestantes(int idLibro) throws SQLException{
+        String sql = "SELECT COUNT(*) FROM Libro WHERE idLibro = ?";
+        try (Connection connection = ConnectionDB.getConexion();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+            preparedStatement.setInt(1,idLibro);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()){
+                return resultSet.getInt(1);
+            } else {
+                return -1;
+            }
+        }
+    }
     private Libro crearLibro(ResultSet resultSet) throws SQLException{
         int idLibro = resultSet.getInt("idLibro");
         Estado estado = Estado.valueOf(resultSet.getString("estado"));

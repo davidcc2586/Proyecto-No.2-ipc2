@@ -63,4 +63,9 @@ public class UsuarioServicio {
         UsuarioDB usuarioDB = new UsuarioDB();
         usuarioDB.desactivarActivarUsuario(idUsuario);
     }
+
+    public Usuario obtenerUsuario(int idUsuario) throws SQLException{
+        UsuarioDB usuarioDB = new UsuarioDB();
+        return usuarioDB.obtenerUsuario(idUsuario).get();
+    }
 }

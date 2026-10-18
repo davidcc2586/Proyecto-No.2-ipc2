@@ -60,14 +60,19 @@ public class BibliotecaServicio {
         libroDB.actualizarLibro(libro);
     }
 
-    public List<PrestamoLibroResponse> prestamosLibro(String estadoPrestamo) throws SQLException{
+    public List<PrestamoLibroResponse> prestamosLibro(String estadoPrestamo,boolean filtrarMorosos) throws SQLException{
         PrestamoLibroDB prestamoLibroDB = new PrestamoLibroDB();
         EstadoPrestamoLibro estadoPrestamoLibro = EstadoPrestamoLibro.valueOf(estadoPrestamo);
-        return prestamoLibroDB.prestamosLibro(LocalDate.now(),false,estadoPrestamoLibro);
+        return prestamoLibroDB.prestamosLibro(LocalDate.now(),filtrarMorosos,estadoPrestamoLibro);
     }
 
-    public void registrarNuevoPrestamoLibro(PrestamoLibroRequest prestamoLibroRequest) throws SQLException{
-        //revisar qui si quedan unidades para prestar
+
+
+    public void registrarNuevoPrestamoLibro(PrestamoLibroRequest prestamoLibroRequest) throws SQLException,ValidacionException{
+        LibroDB libroDB = new LibroDB();
+        if (libroDB.cantidadLibrosRestantes(Integer.parseInt(prestamoLibroRequest.getIdLibro())) < 0){
+            throw new ValidacionException("Cantidad de libros insuficiente");
+        }
         PrestamoLibroDB prestamoLibroDB = new PrestamoLibroDB();
         prestamoLibroDB.registrarNuevoPrestamoLibro(prestamoLibroRequest);
     }
@@ -75,5 +80,17 @@ public class BibliotecaServicio {
     public void registrarDevolucionLibro(PrestamoLibroDevolucionRequest prestamo) throws SQLException{
         PrestamoLibroDB prestamoLibroDB = new PrestamoLibroDB();
         prestamoLibroDB.registrarDevolucionLibro(prestamo);
+    }
+
+
+    public List<PrestamoLibroResponse> prestamosLibroEstudiante(int idEstudiante,String estadoPrestamo, boolean filtroMorosos) throws SQLException{
+        PrestamoLibroDB prestamoLibroDB = new PrestamoLibroDB();
+        EstadoPrestamoLibro estadoPrestamoLibro = EstadoPrestamoLibro.valueOf(estadoPrestamo);
+        return prestamoLibroDB.prestamosLibroEstudiante(idEstudiante,LocalDate.now(),filtroMorosos,estadoPrestamoLibro);
+    }
+
+    public Libro obtenerLibro(int idLIbro) throws SQLException{
+        LibroDB libroDB = new LibroDB();
+        return libroDB.obtenerLibro(idLIbro).get();
     }
 }

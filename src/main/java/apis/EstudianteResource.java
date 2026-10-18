@@ -22,4 +22,17 @@ public class EstudianteResource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\": \"Error en el servidor\"}").build();
         }
     }
+
+    @GET
+    @Path("estudiantesSeccion/{idCurso}")
+    public Response estudiantesSeccion(@PathParam("idCurso") int idSeccion){
+        try {
+            EstudianteServicio estudianteServicio = new EstudianteServicio();
+            return Response.ok(estudianteServicio.estudiantesSeccion(idSeccion)).build();
+        } catch (SQLException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\": \"Error en el servidor\"}").build();
+        }
+    }
+
+
 }

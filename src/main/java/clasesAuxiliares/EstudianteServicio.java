@@ -10,8 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EstudianteServicio {
-    public List<EstudianteSelectResponse> resumenEstudiantes(String estadoEstudiante) throws SQLException {
 
+
+    public List<EstudianteSelectResponse> resumenEstudiantes(String estadoEstudiante) throws SQLException {
         EstudianteDB estudianteDB = new EstudianteDB();
         List<Estudiante> estudiantes = estudianteDB.obtenerEstudiantesSegunEstado(EstadoEstudiante.valueOf(estadoEstudiante));
         List<EstudianteSelectResponse> estudiateSelect = new ArrayList<>();
@@ -19,5 +20,10 @@ public class EstudianteServicio {
             estudiateSelect.add(new EstudianteSelectResponse(estudiante.getIdEstudiante(), estudiante.getNombre() + " " + estudiante.getApellido()));
         }
         return estudiateSelect;
+    }
+
+    public List<Estudiante> estudiantesSeccion(int idSeccion) throws SQLException{
+        EstudianteDB estudianteDB = new EstudianteDB();
+        return estudianteDB.estudiantesSeccion(idSeccion);
     }
 }

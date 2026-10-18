@@ -14,6 +14,19 @@ import java.util.Optional;
 
 public class EstudianteDB {
 
+    public List<Estudiante> estudiantesSeccion(int idSeccion) throws SQLException{
+        List<Estudiante> estudiantes = new ArrayList<>();
+        String sql = "SELECT * FROM Estudiante e JOIN AsignacionEstudiantes ae ON e.idEstudiante = ae.idEstudiante WHERE ae.idSeccion = ?";
+        try (Connection connection = ConnectionDB.getConexion();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+            preparedStatement.setInt(1,idSeccion);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()){
+                estudiantes.add(crearEstudiante(resultSet));
+            }
+        }
+        return estudiantes;
+    }
     public List<Estudiante> obtenerEstudiantesSegunEstado(EstadoEstudiante estadoEstudiante) throws SQLException {
         List<Estudiante> estudiantes = new ArrayList<>();
         String sql = "SELECT * FROM Estudiante WHERE estado = ?";

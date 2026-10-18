@@ -17,6 +17,16 @@ import java.sql.SQLException;
 @Produces(MediaType.APPLICATION_JSON)
 public class BibliotecaResource {
 
+    @GET
+    @Path("datosLibro/{idLibro}")
+    public Response datosLibro(@PathParam("idLibro") int idLibro){
+        try {
+            BibliotecaServicio bibliotecaServicio = new BibliotecaServicio();
+            return Response.ok(bibliotecaServicio.obtenerLibro(idLibro)).build();
+        } catch (SQLException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\": \"Error interno en el servidor\"}").build();
+        }
+    }
 
     @GET
     @Path("catalogo")
@@ -81,7 +91,7 @@ public class BibliotecaResource {
 
     @PUT
     @Path("actualizar")
-    public Response desactivarActivarLibro(LibroActualizarRequest libroActualizarRequest){
+    public Response actualizarLibro(LibroActualizarRequest libroActualizarRequest){
         try {
             BibliotecaServicio bibliotecaServicio = new BibliotecaServicio();
             bibliotecaServicio.actualizarLibro(libroActualizarRequest);
@@ -94,11 +104,11 @@ public class BibliotecaResource {
     }
 
     @GET
-    @Path("prestamoLibro/{estado}")
-    public Response prestamosLibro(@PathParam("estado") String estadoPrestamo){
+    @Path("prestamoLibro/{estado}/{filtroMoroso}")
+    public Response prestamosLibro(@PathParam("estado") String estadoPrestamo,@PathParam("filtroMoroso") boolean filtro){
         try {
             BibliotecaServicio bibliotecaServicio = new BibliotecaServicio();
-            return Response.ok(bibliotecaServicio.prestamosLibro(estadoPrestamo)).build();
+            return Response.ok(bibliotecaServicio.prestamosLibro(estadoPrestamo, filtro)).build();
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\": \"Error interno en el servidor\"}").build();
         }
@@ -113,8 +123,11 @@ public class BibliotecaResource {
             return Response.ok().build();
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\": \"Error interno en el servidor\"}").build();
+        } catch (ValidacionException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\": \"" + e.getMessage() + "\"}").build();
         }
     }
+
     @PUT
     @Path("RegistrarDevolucio")
     public Response registrarNuevoPrestamoLibro(PrestamoLibroDevolucionRequest prestamo){
@@ -122,6 +135,18 @@ public class BibliotecaResource {
             BibliotecaServicio bibliotecaServicio = new BibliotecaServicio();
             bibliotecaServicio.registrarDevolucionLibro(prestamo);
             return Response.ok().build();
+        } catch (SQLException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\": \"Error interno en el servidor\"}").build();
+        }
+    }
+
+
+    @GET
+    @Path("prestamoLibroEstudiante/{estado}/{idEstudiante}/{filtroMoroso}")
+    public Response prestamosLibro(@PathParam("estado") String estadoPrestamo,@PathParam("idEstudiante") int idEstudiante,@PathParam("filtroMoroso") boolean filtro){
+        try {
+            BibliotecaServicio bibliotecaServicio = new BibliotecaServicio();
+            return Response.ok(bibliotecaServicio.prestamosLibroEstudiante(idEstudiante, estadoPrestamo, filtro)).build();
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\": \"Error interno en el servidor\"}").build();
         }

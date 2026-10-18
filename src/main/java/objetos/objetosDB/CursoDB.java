@@ -1,5 +1,6 @@
 package objetos.objetosDB;
 
+import objetos.enums.Estado;
 import objetos.objetosResponse.Curso;
 
 import java.sql.Connection;
@@ -12,13 +13,35 @@ import java.util.Optional;
 
 public class CursoDB {
 
-    public List<Curso> todosLosCursos() throws SQLException {
+
+    public List<Curso> cursosDisponibles(String estado) throws SQLException{
+        List<Curso> cursos = new ArrayList<>();
+        String sql = "SELECT * FROM Curso WHERE estado = ?";
+        try (Connection connection = ConnectionDB.getConexion();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, estado);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()){
+                cursos.add(crearCurso(resultSet));
+            }
+        }
+        return cursos;
+    }
+    public List<Curso> cursosDeUsuarios(int id, boolean esEstudiante) throws SQLException {
         List<Curso> cursoResponses = new ArrayList<>();
-        String sqlSolicitarCursos = "SELECT * FROM Curso";
+
+        String sqlSolicitarCursos;
+
+        if (esEstudiante){
+            sqlSolicitarCursos = "SELECT * FROM Estudiante estudiate JOIN AsignacionEstudiantes asignacion ON estudiate.idEstudiante = asignacion.idEstudiante JOIN Seccion seccion ON asignacion.idSeccion = seccion.idSeccion JOIN CurriculumCursosGrado curriculum ON seccion.idGrado = curriculum.idGrado JOIN Curso curso ON curriculum.idCurso = curso.idCurso WHERE estudiate.idEstudiante = ?";
+        } else {
+            sqlSolicitarCursos = "SELECT * FROM Curso curso JOIN AsignacionMaestrosSeccion asignacion ON curso.idCurso = asignacion.idCurso where idMaestro = ?";
+        }
 
         try (Connection connection = ConnectionDB.getConexion();
-             PreparedStatement preparedStatement = connection.prepareStatement(sqlSolicitarCursos);
-             ResultSet resultSet = preparedStatement.executeQuery()) {
+             PreparedStatement preparedStatement = connection.prepareStatement(sqlSolicitarCursos)) {
+            preparedStatement.setInt(1, id);
+             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()){
                 cursoResponses.add(crearCurso(resultSet));
             }
@@ -32,6 +55,7 @@ public class CursoDB {
         String sqlSolicitarCursos = "SELECT * FROM Curso WHERE idCurso = ?";
         try (Connection connection = ConnectionDB.getConexion();
              PreparedStatement preparedStatement = connection.prepareStatement(sqlSolicitarCursos)){
+            preparedStatement.setInt(1,idCurso);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()){
                 curso = Optional.of(crearCurso(resultSet));
@@ -46,6 +70,42 @@ public class CursoDB {
         try (Connection connection = ConnectionDB.getConexion();
              PreparedStatement preparedStatement = connection.prepareStatement(sqlIngresarCurso)){
             preparedStatement.setString(1,nombreCurso);
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    public void activarDesactivarCurso(int idCurso) throws SQLException{
+        try (Connection connection = ConnectionDB.getConexion()){
+            Estado estado;
+
+            String sqlSolicitarEstado = "SELECT estado FROM Curso WHERE idCurso = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sqlSolicitarEstado)){
+                preparedStatement.setInt(1,idCurso);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                resultSet.next();
+                estado = Estado.valueOf(resultSet.getString("estado"));
+            }
+            if (estado.equals(Estado.ACTIVO)){
+                estado = Estado.INACTIVO;
+            }else {
+                estado = Estado.ACTIVO;
+            }
+            String sqlcambiarEstado = "UPDATE Curso SET estado = ? WHERE  idCurso = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sqlcambiarEstado)){
+                preparedStatement.setString(1,estado.name());
+                preparedStatement.setInt(2, idCurso);
+                preparedStatement.executeUpdate();
+            }
+
+        }
+    }
+
+    public void actualizarCurso(int idCurso, String nombreActualizado) throws SQLException{
+        String sql = "UPDATE Curso SET nombreCurso = ? WHERE idCurso = ?";
+        try (Connection connection = ConnectionDB.getConexion();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+            preparedStatement.setString(1,nombreActualizado);
+            preparedStatement.setInt(2,idCurso);
             preparedStatement.executeUpdate();
         }
     }

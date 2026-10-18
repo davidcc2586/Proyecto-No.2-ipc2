@@ -1,8 +1,9 @@
 package objetos.objetosDB;
 
 import objetos.enums.GradoColegio;
+import objetos.objetosRequest.GradoActualizarRequest;
+import objetos.objetosRequest.GradoRequest;
 import objetos.objetosResponse.AsignacionEstudiantes;
-import objetos.objetosResponse.Carrera;
 import objetos.objetosResponse.Grado;
 import objetos.objetosResponse.Seccion;
 
@@ -12,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class GradoDB {
 
@@ -29,13 +31,24 @@ public class GradoDB {
 
         return gradoResponses;
     }
-    public void ingresarNuevoGrado(Grado grado) throws SQLException{
-        String sqlIngresarGrado = "insert into Grado(nombreGrado, grado, idCarrera) VALUES(?,?,?)";
+    public void ingresarNuevoGrado(GradoRequest grado) throws SQLException{
+        String sqlIngresarGrado = "INSERT INTO Grado(nombreGrado, grado, idCarrera) VALUES(?,?,?)";
         try (Connection connection = ConnectionDB.getConexion();
              PreparedStatement preparedStatement = connection.prepareStatement(sqlIngresarGrado)){
-            preparedStatement.setString(1, grado.getGradoColegio().name());
-            preparedStatement.setString(2, grado.getNombreGrado());
-            preparedStatement.setInt(3, grado.getIdCarrera());
+            preparedStatement.setString(1, grado.getNombreGrado());
+            preparedStatement.setString(2, grado.getGradoColegio());
+            preparedStatement.setInt(3, Integer.parseInt(grado.getIdCarrera()));
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    public void actualizarGrado(GradoActualizarRequest grado) throws SQLException{
+        String sqlIngresarGrado = "UPDATE Grado SET nombreGrado = ?,grado = ?, idCarrera = ? WHERE idGrado = ?";
+        try (Connection connection = ConnectionDB.getConexion();
+             PreparedStatement preparedStatement = connection.prepareStatement(sqlIngresarGrado)){
+            preparedStatement.setString(1, grado.getNombreGrado());
+            preparedStatement.setString(2, grado.getGradoColegio());
+            preparedStatement.setInt(3, Integer.parseInt(grado.getIdCarrera()));
             preparedStatement.executeUpdate();
         }
     }
@@ -85,6 +98,19 @@ public class GradoDB {
                 throw new SQLException("Usuario no encontrado.");
             }
         }
+    }
+
+    public Optional<Grado> obtenerGrado(int idGrado) throws SQLException{
+        String sqlIngresarGrado = "SELECT * FROM Grado WHERE idGrado = ?";
+        Optional<Grado> grado = Optional.empty();
+        try (Connection connection = ConnectionDB.getConexion();
+             PreparedStatement preparedStatement = connection.prepareStatement(sqlIngresarGrado)){
+            preparedStatement.setInt(1, idGrado);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+            grado = Optional.of(crearGrado(resultSet));
+        }
+        return grado;
     }
 
     private Grado crearGrado(ResultSet resultSet) throws SQLException{

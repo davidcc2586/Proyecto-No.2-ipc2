@@ -67,5 +67,14 @@ public class UsuarioResource {
         }
     }
 
-
+    @GET
+    @Path("datosUsuario/{idUsuario}")
+    public Response datosUsuario(@PathParam("idUsuario") int idUsuario) {
+        try {
+            UsuarioServicio usuarioServicio = new UsuarioServicio();
+            return Response.ok(usuarioServicio.obtenerUsuario(idUsuario)).build();
+        } catch (SQLException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\": \"Error interno en el servidor\"}").build();
+        }
+    }
 }
