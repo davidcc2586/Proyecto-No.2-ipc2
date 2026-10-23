@@ -1,0 +1,41 @@
+<div class="container-fluid min-vh-100 d-flex justify-content-center align-items-center bg-light p-4">
+  <div class="col-12 col-md-8 col-lg-5">
+    
+    <!-- Tarjeta Principal -->
+    <div class="card border-0 shadow-sm p-4 p-md-5">
+      
+      <!-- Cabecera -->
+      <header class="text-center mb-4">
+        <span class="text-muted small fw-bold">PLATAFORMA ACADÉMICA</span>
+        <h1 class="h3 fw-bold mt-1 mb-1">Proyecto No. 2 IPC2</h1>
+        <p class="text-muted small mb-0">Ingresa a tu espacio de aprendizaje.</p>
+      </header>
+
+      <!-- Pestañas de navegación simples -->
+      <nav class="nav nav-pills nav-fill bg-light p-1 rounded mb-4">
+        <a 
+          class="nav-link text-dark fw-semibold small" 
+          routerLink="/iniciar-sesion" 
+          routerLinkActive="active bg-white shadow-sm text-primary">
+          Iniciar sesión
+        </a>
+        <a 
+          class="nav-link text-dark fw-semibold small" 
+          routerLink="/recuperar-contrasena" 
+          routerLinkActive="active bg-white shadow-sm text-primary">
+          Recuperar contraseña
+        </a>
+      </nav>
+
+      <!-- Aquí se renderiza InicioSesion o RecuperarContrasena -->
+      <router-outlet></router-outlet>
+
+    </div>
+
+    <!-- Pie de página discreto -->
+    <footer class="text-center text-muted small mt-4">
+      Code 'n Bugs · Plataforma de gestión escolar
+    </footer>
+
+  </div>
+</div>

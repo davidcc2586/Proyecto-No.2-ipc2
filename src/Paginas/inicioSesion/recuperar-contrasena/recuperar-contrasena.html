@@ -1,0 +1,61 @@
+<div>
+  <h5 class="fw-bold mb-1">Recupera tu contraseña</h5>
+  <p class="text-muted small mb-4">
+    Escribe los datos asociados a tu cuenta para recibir instrucciones.
+  </p>
+
+  <form #formulario="ngForm" (ngSubmit)="recuperarContrasena(formulario)">
+    
+    <!-- Usuario -->
+    <div class="mb-3">
+      <label for="usuarioRecu" class="form-label small fw-semibold">Usuario</label>
+      <input
+        id="usuarioRecu"
+        name="usuario"
+        type="text"
+        class="form-control bg-light border-0 py-2"
+        placeholder="Tu usuario"
+        (change)="usuario = txtUsuario.value"
+        #txtUsuario
+      />
+    </div>
+
+    <!-- Fecha de Nacimiento -->
+    <div class="mb-3">
+      <label for="fechaNacimiento" class="form-label small fw-semibold">Fecha de Nacimiento</label>
+      <input
+        id="fechaNacimiento"
+        name="fechaNacimiento"
+        type="date"
+        class="form-control bg-light border-0 py-2"
+        (change)="fechaNacimiento = txtFechaNacimiento.value"
+        #txtFechaNacimiento
+      />
+    </div>
+
+    <!-- CUI -->
+    <div class="mb-3">
+      <label for="cui" class="form-label small fw-semibold">CUI</label>
+      <input
+        id="cui"
+        name="cui"
+        type="text"
+        class="form-control bg-light border-0 py-2"
+        placeholder="Ingresa tu CUI"
+        (change)="cui = txtCui.value"
+        #txtCui
+      />
+    </div>
+
+    <!-- Botón -->
+    <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold mt-2">
+      Enviar instrucciones
+    </button>
+  </form>
+
+  @if (estado) {
+    <div class="alert alert-info mt-3 py-2 small text-center" role="status">
+      {{ estado }}
+    </div>
+  }
+</div>

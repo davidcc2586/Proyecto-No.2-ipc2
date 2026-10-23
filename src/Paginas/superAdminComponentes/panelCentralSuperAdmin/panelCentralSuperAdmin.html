@@ -1,0 +1,156 @@
+<div class="container-fluid vh-100 d-flex flex-column p-0 bg-light">
+  
+  <!-- Contenedor Principal con Sidebar y Contenido -->
+  <div class="container-fluid flex-grow-1 overflow-hidden">
+    <div class="row h-100">
+      
+      <!-- Área de Contenido -->
+      <main class="col-lg-10 col-12 overflow-auto p-4">
+        
+        <!-- Bienvenida -->
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+          <div>
+            <span class="text-muted small fw-bold">MARTES, 20 DE OCTUBRE DE 2026</span>
+            <h1 class="h3 fw-bold mb-1">Buen día, Super Admin!</h1>
+            <p class="text-muted mb-0">Aquí tienes el resumen de actividad de tu institución.</p>
+          </div>
+        </div>
+
+        <!-- Tarjetas de Estadísticas -->
+        <div class="row g-3 mb-4">
+          <div class="col-md-3 col-6">
+            <div class="card border-0 shadow-sm h-100 p-3">
+              <div class="text-primary mb-2 fs-4"><i class="bi bi-people-fill"></i></div>
+              <span class="text-muted small">Estudiantes activos</span>
+              <h3 class="fw-bold mb-1">1,248</h3>
+            </div>
+          </div>
+          <div class="col-md-3 col-6">
+            <div class="card border-0 shadow-sm h-100 p-3">
+              <div class="text-purple mb-2 fs-4 text-info"><i class="bi bi-person-workspace"></i></div>
+              <span class="text-muted small">Personal docente</span>
+              <h3 class="fw-bold mb-1">68</h3>
+            </div>
+          </div>
+          <div class="col-md-3 col-6">
+            <div class="card border-0 shadow-sm h-100 p-3" id="finanzas">
+              <div class="text-success mb-2 fs-4"><i class="bi bi-cash-coin"></i></div>
+              <span class="text-muted small">Ingresos del mes</span>
+              <h3 class="fw-bold mb-1">Q 86,450</h3>
+            </div>
+          </div>
+          <div class="col-md-3 col-6">
+            <div class="card border-0 shadow-sm h-100 p-3">
+              <div class="text-warning mb-2 fs-4"><i class="bi bi-exclamation-circle-fill"></i></div>
+              <span class="text-muted small">Pagos pendientes</span>
+              <h3 class="fw-bold mb-1">37</h3>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sección de Contenido Principal a dos columnas -->
+        <div class="row g-4">
+          
+          <!-- Columna Izquierda: Tabla sencilla para rellenar el espacio -->
+          <div class="col-lg-8">
+            <div class="card border-0 shadow-sm p-3 h-100">
+              <h5 class="fw-bold mb-1">Acciones y Avisos recientes</h5>
+              <small class="text-muted mb-3">Registro de actividad del sistema</small>
+              
+              <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th class="border-0">MÓDULO</th>
+                      <th class="border-0">DESCRIPCIÓN</th>
+                      <th class="border-0">ESTADO</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Inscripciones</strong></td>
+                      <td><small class="text-muted">Apertura de ciclo para nuevos ingresos</small></td>
+                      <td><span class="badge bg-success-subtle text-success">Activo</span></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Pagos</strong></td>
+                      <td><small class="text-muted">Corte de caja mensual realizado</small></td>
+                      <td><span class="badge bg-primary-subtle text-primary">Completado</span></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Biblioteca</strong></td>
+                      <td><small class="text-muted">Revisión de inventario físico</small></td>
+                      <td><span class="badge bg-warning-subtle text-warning">Pendiente</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Columna Derecha: Resumen Académico y Biblioteca -->
+          <div class="col-lg-4 d-flex flex-column gap-4">
+            
+            <!-- Resumen Académico -->
+            <div class="card border-0 shadow-sm p-3">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                  <h5 class="fw-bold mb-0">Resumen académico</h5>
+                  <small class="text-muted">Organización del ciclo actual</small>
+                </div>
+              </div>
+              <div class="d-flex flex-column gap-3">
+                <div class="d-flex align-items-center justify-content-between">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="p-2 bg-primary-subtle text-primary rounded"><i class="bi bi-layers-fill"></i></span>
+                    <div><strong>Grados activos</strong><br><small class="text-muted">Preprimaria a Diversificado</small></div>
+                  </div>
+                  <span class="fw-bold">12</span>
+                </div>
+                <div class="d-flex align-items-center justify-content-between">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="p-2 bg-info-subtle text-info rounded"><i class="bi bi-diagram-3-fill"></i></span>
+                    <div><strong>Secciones</strong><br><small class="text-muted">En todos los niveles</small></div>
+                  </div>
+                  <span class="fw-bold">24</span>
+                </div>
+                <div class="d-flex align-items-center justify-content-between">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="p-2 bg-success-subtle text-success rounded"><i class="bi bi-journal-check"></i></span>
+                    <div><strong>Cursos asignados</strong><br><small class="text-muted">Con docente responsable</small></div>
+                  </div>
+                  <span class="fw-bold">86</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Biblioteca breve -->
+            <div class="card border-0 shadow-sm p-3" id="biblioteca">
+              <h5 class="fw-bold mb-1">Biblioteca</h5>
+              <small class="text-muted mb-3">Actividad de préstamos</small>
+              <div class="row text-center g-2">
+                <div class="col-4 border-end">
+                  <strong class="d-block fs-5">312</strong>
+                  <small class="text-muted" style="font-size: 0.75rem;">Disponibles</small>
+                </div>
+                <div class="col-4 border-end">
+                  <strong class="d-block fs-5">28</strong>
+                  <small class="text-muted" style="font-size: 0.75rem;">Activos</small>
+                </div>
+                <div class="col-4">
+                  <strong class="d-block fs-5 text-danger">4</strong>
+                  <small class="text-muted" style="font-size: 0.75rem;">Con atraso</small>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="text-center text-muted small mt-5 py-3 border-top">Code 'n Bugs · Plataforma de gestión escolar</footer>
+
+      </main>
+    </div>
+  </div>
+</div>
