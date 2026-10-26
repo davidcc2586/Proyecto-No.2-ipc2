@@ -58,6 +58,9 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "proxyConfig": "src/proxy.conf.json"
+          },
           "configurations": {
             "production": {
               "buildTarget": "Proyecto_No.2_IPC2:build:production"

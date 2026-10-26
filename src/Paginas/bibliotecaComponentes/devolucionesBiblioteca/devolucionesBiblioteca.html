@@ -1,0 +1,95 @@
+<div class="container-fluid bg-light py-4">
+  <div class="mb-4">
+    <span class="text-muted small fw-bold">BIBLIOTECA</span>
+    <h1 class="h3 fw-bold mb-1">Devoluciones</h1>
+    <p class="text-muted mb-0">Consulta préstamos pendientes y registra la devolución de un libro.</p>
+  </div>
+
+  @if (mensaje) {
+    <div class="alert alert-success">{{ mensaje }}</div>
+  }
+  @if (error) {
+    <div class="alert alert-danger">{{ error }}</div>
+  }
+
+  <section class="card border-0 shadow-sm p-3 p-md-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+      <div>
+        <h2 class="h5 fw-bold mb-1">Préstamos pendientes de devolución</h2>
+        <small class="text-muted">Selecciona un préstamo para registrar su devolución.</small>
+      </div>
+      <button class="btn btn-sm btn-outline-primary" type="button" (click)="cargarPrestamos()" [disabled]="cargando">
+        <i class="bi bi-arrow-clockwise me-1"></i>Actualizar
+      </button>
+    </div>
+
+    <div class="form-check form-switch mb-3">
+      <input class="form-check-input" type="checkbox" id="soloMorosos" name="filtroMoroso" [(ngModel)]="filtroMoroso" (ngModelChange)="cargarPrestamos()">
+      <label class="form-check-label" for="soloMorosos">Mostrar solo préstamos morosos</label>
+    </div>
+
+    @if (cargando) {
+      <p class="text-center text-muted py-4 mb-0">Cargando préstamos...</p>
+    } @else if (prestamos.length === 0) {
+      <p class="text-center text-muted py-4 mb-0">No hay préstamos pendientes para este filtro.</p>
+    } @else {
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>LIBRO / ESTUDIANTE</th>
+              <th>FECHA DE PRÉSTAMO</th>
+              <th>DEVOLUCIÓN ESTIMADA</th>
+              <th>MULTA</th>
+              <th class="text-end">ACCIÓN</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (prestamo of prestamos; track prestamo.idPrestamoLibro) {
+              <tr>
+                <td>
+                  <strong class="d-block">{{ prestamo.nombreLibro }}</strong>
+                  <small class="text-muted">Estudiante #{{ prestamo.idEstudiante }}</small>
+                </td>
+                <td>{{ formatoFecha(prestamo.fechaPrestamo) }}</td>
+                <td>{{ formatoFecha(prestamo.fechaEstimadaDevolucion) }}</td>
+                <td>Q {{ prestamo.multa }}</td>
+                <td class="text-end">
+                  <button class="btn btn-sm btn-outline-primary" type="button" (click)="seleccionarPrestamo(prestamo)">
+                    Registrar devolución
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    @if (prestamoSeleccionado) {
+      <form #devolucionForm="ngForm" (ngSubmit)="registrarDevolucion(devolucionForm)" novalidate class="border-top mt-4 pt-4">
+        <h3 class="h6 fw-bold">Confirmar devolución</h3>
+        <p class="text-muted small mb-3">
+          Libro: <strong>{{ prestamoSeleccionado.nombreLibro }}</strong> ·
+          Estudiante #{{ prestamoSeleccionado.idEstudiante }}
+        </p>
+        <div class="row g-3 align-items-end">
+          <div class="col-sm-6 col-md-4">
+            <label class="form-label" for="fechaDevolucion">Fecha de devolución</label>
+            <input id="fechaDevolucion" class="form-control" type="date" name="fechaDevolucion" [(ngModel)]="fechaDevolucion" required>
+          </div>
+          <div class="col-sm-6 col-md-auto d-flex gap-2">
+            <button class="btn btn-outline-secondary" type="button" (click)="prestamoSeleccionado = null">Cancelar</button>
+            <button class="btn btn-primary" type="submit" [disabled]="guardando">
+              @if (guardando) {
+                <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Guardando...
+              } @else {
+                <i class="bi bi-check-lg me-2"></i>Confirmar devolución
+              }
+            </button>
+          </div>
+        </div>
+      </form>
+    }
+  </section>
+</div>

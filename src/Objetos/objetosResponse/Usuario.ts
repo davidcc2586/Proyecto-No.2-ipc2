@@ -1,3 +1,4 @@
+import { Estado } from '../enums/Estado';
 import { RolUsuario } from '../enums/RolUsuario';
 
 export class Usuario {
@@ -8,11 +9,12 @@ export class Usuario {
   fechaNacimiento!: string;
   usuario!: string;
   clave!: string;
+  estado!: Estado;
   rolUsuario!: RolUsuario;
   fechaContratacion!: string;
   salario!: number;
 
-  constructor(idUsuario: number, cui: string, nombre: string, apellido: string, fechaNacimiento: string, usuario: string, clave: string, rolUsuario: RolUsuario, fechaContratacion: string, salario: number) {
+  constructor(idUsuario: number, cui: string, nombre: string, apellido: string, fechaNacimiento: string, usuario: string, clave: string, estado: Estado, rolUsuario: RolUsuario, fechaContratacion: string, salario: number) {
     this.idUsuario = idUsuario;
     this.cui = cui;
     this.nombre = nombre;
@@ -20,6 +22,7 @@ export class Usuario {
     this.fechaNacimiento = fechaNacimiento;
     this.usuario = usuario;
     this.clave = clave;
+    this.estado = estado;
     this.rolUsuario = rolUsuario;
     this.fechaContratacion = fechaContratacion;
     this.salario = salario;

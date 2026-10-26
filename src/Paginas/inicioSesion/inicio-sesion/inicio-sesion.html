@@ -13,8 +13,8 @@
         type="text"
         class="form-control bg-light border-0 py-2"
         placeholder="Ingresa tu usuario"
-        (change)="usuario = txtUsuario.value"
-        #txtUsuario
+          [(ngModel)]="usuario"
+          required
         />
     </div>
 
@@ -32,8 +32,8 @@
             [type]="mostrarContrasena ? 'text' : 'password'"
             class="form-control bg-light border-0 py-2"
             placeholder="Ingresa tu contraseña"
-            (change)="clave = txtClave.value"
-            #txtClave
+            [(ngModel)]="clave"
+            required
         />
         <button
             class="btn btn-light border-0 bg-light text-muted px-3"
@@ -47,13 +47,13 @@
     </div>
 
     <!-- Botón de Envío -->
-    <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold mt-2">
-        Iniciar sesión
+    <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold mt-2" [disabled]="cargando || formulario.invalid">
+        {{ cargando ? 'Ingresando...' : 'Iniciar sesión' }}
     </button>
     </form>
 
     @if (mensaje) {
-        <div class="alert alert-warning mt-3 py-2 small text-center" role="status">
+        <div class="alert mt-3 py-2 small text-center" [class.alert-danger]="error" [class.alert-warning]="!error" [attr.role]="error ? 'alert' : 'status'">
         {{ mensaje }}
     </div>
     }

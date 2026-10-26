@@ -1,7 +1,7 @@
 <div>
   <h5 class="fw-bold mb-1">Recupera tu contraseña</h5>
   <p class="text-muted small mb-4">
-    Escribe los datos asociados a tu cuenta para recibir instrucciones.
+    Escribe los datos asociados a tu cuenta para recuperar tu clave.
   </p>
 
   <form #formulario="ngForm" (ngSubmit)="recuperarContrasena(formulario)">
@@ -15,8 +15,8 @@
         type="text"
         class="form-control bg-light border-0 py-2"
         placeholder="Tu usuario"
-        (change)="usuario = txtUsuario.value"
-        #txtUsuario
+        [(ngModel)]="usuario"
+        required
       />
     </div>
 
@@ -28,8 +28,8 @@
         name="fechaNacimiento"
         type="date"
         class="form-control bg-light border-0 py-2"
-        (change)="fechaNacimiento = txtFechaNacimiento.value"
-        #txtFechaNacimiento
+        [(ngModel)]="fechaNacimiento"
+        required
       />
     </div>
 
@@ -42,20 +42,23 @@
         type="text"
         class="form-control bg-light border-0 py-2"
         placeholder="Ingresa tu CUI"
-        (change)="cui = txtCui.value"
-        #txtCui
+        [(ngModel)]="cui"
+        required
       />
     </div>
 
     <!-- Botón -->
-    <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold mt-2">
-      Enviar instrucciones
+    <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold mt-2" [disabled]="cargando || formulario.invalid">
+      {{ cargando ? 'Consultando...' : 'Recuperar clave' }}
     </button>
   </form>
 
   @if (estado) {
-    <div class="alert alert-info mt-3 py-2 small text-center" role="status">
+    <div class="alert mt-3 py-2 small text-center" [class.alert-danger]="error" [class.alert-info]="!error" [attr.role]="error ? 'alert' : 'status'">
       {{ estado }}
+      @if (claveRecuperada) {
+        <div class="fw-bold mt-2">Clave: {{ claveRecuperada }}</div>
+      }
     </div>
   }
 </div>

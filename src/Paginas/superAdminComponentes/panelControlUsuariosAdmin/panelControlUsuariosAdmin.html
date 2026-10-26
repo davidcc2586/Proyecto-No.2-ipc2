@@ -1,0 +1,282 @@
+<div class="container-fluid bg-light py-4">
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+    <div>
+      <span class="text-muted small fw-bold">ADMINISTRACIÓN</span>
+      <h1 class="h3 fw-bold mb-1">Control de usuarios</h1>
+      <p class="text-muted mb-0">Crea, consulta y administra las cuentas de la institución.</p>
+    </div>
+    <button class="btn btn-primary" type="button" (click)="nuevoUsuario()">
+      <i class="bi bi-person-plus-fill me-2"></i>Nuevo usuario
+    </button>
+  </div>
+
+  @if (mensaje) {
+    <div class="alert alert-success alert-dismissible" role="status">
+      {{ mensaje }}
+      <button type="button" class="btn-close" aria-label="Cerrar" (click)="mensaje = ''"></button>
+    </div>
+  }
+
+  @if (error) {
+    <div class="alert alert-danger alert-dismissible" role="alert">
+      {{ error }}
+      <button type="button" class="btn-close" aria-label="Cerrar" (click)="error = ''"></button>
+    </div>
+  }
+
+  <div class="row g-4 align-items-start">
+    <section class="col-12 col-xl-7">
+      <div class="card border-0 shadow-sm p-3 p-md-4">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-3">
+          <div>
+            <h2 class="h5 fw-bold mb-1">Cuentas registradas</h2>
+            <small class="text-muted">Consulta usuarios por rol y selecciona una cuenta para ver sus datos.</small>
+          </div>
+          <span class="badge bg-primary-subtle text-primary fs-6">{{ usuarios.length }} usuarios</span>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-sm-5">
+            <label class="form-label small fw-semibold" for="filtroRol">Filtrar por rol</label>
+            <select
+              id="filtroRol"
+              class="form-select"
+              [(ngModel)]="selectedRole"
+              (ngModelChange)="cambiarRol()"
+              name="filtroRol">
+              @for (rol of roles; track rol.key) {
+                <option [value]="rol.key">{{ rol.label }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th class="border-0">USUARIO</th>
+                <th class="border-0">ROL</th>
+                <th class="border-0">estado</th>
+                <th class="border-0 text-end">ACCIONES</th>
+              </tr>
+            </thead>
+            <tbody>
+              @if (cargandoUsuarios) {
+                <tr>
+                  <td colspan="3" class="text-center text-muted py-4">
+                    <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+                    Cargando usuarios...
+                  </td>
+                </tr>
+              } @else if (usuariosFiltrados.length === 0) {
+                <tr>
+                  <td colspan="3" class="text-center text-muted py-4">
+                    No se encontraron usuarios para este rol.
+                  </td>
+                </tr>
+              } @else {
+                @for (usuario of usuariosFiltrados; track usuario.idUsuario) {
+                  <tr>
+                    <td>
+                      <strong class="d-block">{{ usuario.nombre }} {{ usuario.apellido }}</strong>
+                      <small class="text-muted">{{ usuario.usuario }} · CUI {{ usuario.cui }}</small>
+                    </td>
+                    <td><span class="badge bg-secondary-subtle text-secondary">{{ nombreRol(usuario.rolUsuario) }}</span></td>
+                    <td><span class="badge bg-secondary-subtle text-secondary">{{ usuario.estado}}</span></td>
+                    <td class="text-end text-nowrap">
+                      <button
+                        class="btn btn-sm btn-outline-primary me-1"
+                        type="button"
+                        title="Ver detalles"
+                        aria-label="Ver detalles"
+                        (click)="verUsuario(usuario)">
+                        <i class="bi bi-eye"></i>
+                      </button>
+                      <button
+                        class="btn btn-sm btn-outline-warning"
+                        type="button"
+                        title="Cambiar estado de la cuenta"
+                        aria-label="Cambiar estado de la cuenta"
+                        (click)="cambiarEstado(usuario)">
+                        <i class="bi bi-person-gear"></i>
+                      </button>
+                    </td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="col-12 col-xl-5">
+      <div class="card border-0 shadow-sm p-3 p-md-4">
+        @if (cargandoDetalle) {
+          <div class="text-center text-muted py-5">
+            <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+            Consultando datos...
+          </div>
+        } @else {
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
+            <div>
+              <h2 class="h5 fw-bold mb-1">
+                @if (modo === 'crear') {
+                  Nuevo usuario
+                } @else if (modo === 'editar') {
+                  Editar usuario
+                } @else {
+                  Datos del usuario
+                }
+              </h2>
+              <small class="text-muted">
+                @if (modo === 'editar') {
+                  Para guardar los cambios, ingresa y confirma la nueva contraseña.
+                } @else if (modo === 'crear') {
+                  Completa los datos para registrar una cuenta.
+                } @else {
+                  Información de la cuenta seleccionada.
+                }
+              </small>
+            </div>
+            @if (modo === 'ver') {
+              <button class="btn btn-sm btn-outline-primary" type="button" (click)="editarUsuario()">
+                <i class="bi bi-pencil me-1"></i>Editar
+              </button>
+            }
+          </div>
+
+          <form #usuarioForm="ngForm" (ngSubmit)="guardarUsuario(usuarioForm)" novalidate>
+            @if (modo === 'crear') {
+              <div class="row g-3">
+                <div class="col-sm-6">
+                  <label class="form-label" for="cui">CUI</label>
+                  <input id="cui" class="form-control" name="cui" [(ngModel)]="formulario.cui" required>
+                </div>
+                <div class="col-sm-6">
+                  <label class="form-label" for="rolUsuario">Rol</label>
+                  <select id="rolUsuario" class="form-select" name="rolUsuario" [(ngModel)]="formulario.rolUsuario" required>
+                    @for (rol of roles; track rol.key) {
+                      <option [value]="rol.key">{{ rol.label }}</option>
+                    }
+                  </select>
+                </div>
+                <div class="col-sm-6">
+                  <label class="form-label" for="nombre">Nombre</label>
+                  <input id="nombre" class="form-control" name="nombre" [(ngModel)]="formulario.nombre" required>
+                </div>
+                <div class="col-sm-6">
+                  <label class="form-label" for="apellido">Apellido</label>
+                  <input id="apellido" class="form-control" name="apellido" [(ngModel)]="formulario.apellido" required>
+                </div>
+                <div class="col-sm-6">
+                  <label class="form-label" for="fechaNacimiento">Fecha de nacimiento</label>
+                  <input id="fechaNacimiento" class="form-control" type="date" name="fechaNacimiento" [(ngModel)]="formulario.fechaNacimiento" required>
+                </div>
+                <div class="col-sm-6">
+                  <label class="form-label" for="fechaContratacion">Fecha de contratación</label>
+                  <input id="fechaContratacion" class="form-control" type="date" name="fechaContratacion" [(ngModel)]="formulario.fechaContratacion" required>
+                </div>
+                <div class="col-sm-6">
+                  <label class="form-label" for="usuario">Nombre de usuario</label>
+                  <input id="usuario" class="form-control" name="usuario" autocomplete="username" [(ngModel)]="formulario.usuario" required>
+                </div>
+                <div class="col-sm-6">
+                  <label class="form-label" for="salario">Salario</label>
+                  <input id="salario" class="form-control" type="number" min="0" step="0.01" name="salario" [(ngModel)]="formulario.salario" required>
+                </div>
+                <div class="col-sm-6">
+                  <label class="form-label" for="clave">Contraseña</label>
+                  <input id="clave" class="form-control" type="password" name="clave" autocomplete="new-password" [(ngModel)]="formulario.clave" required>
+                </div>
+                <div class="col-sm-6">
+                  <label class="form-label" for="claveConfirmacion">Confirmar contraseña</label>
+                  <input id="claveConfirmacion" class="form-control" type="password" name="claveConfirmacion" autocomplete="new-password" [(ngModel)]="formulario.claveConfirmacion" required>
+                </div>
+              </div>
+            } @else if (modo === 'editar') {
+              <div class="row g-3">
+                <div class="col-sm-6">
+                  <label class="form-label" for="usuarioEditar">Nombre de usuario</label>
+                  <input id="usuarioEditar" class="form-control" name="usuario" [(ngModel)]="formulario.usuario" required>
+                </div>
+                <div class="col-sm-6">
+                  <label class="form-label" for="rolEditar">Rol</label>
+                  <select id="rolEditar" class="form-select" name="rolUsuario" [(ngModel)]="formulario.rolUsuario" required>
+                    @for (rol of roles; track rol.key) {
+                      <option [value]="rol.key">{{ rol.label }}</option>
+                    }
+                  </select>
+                </div>
+                <div class="col-sm-6">
+                  <label class="form-label" for="salarioEditar">Salario</label>
+                  <input id="salarioEditar" class="form-control" type="number" min="0" step="0.01" name="salario" [(ngModel)]="formulario.salario" required>
+                </div>
+                <div class="col-sm-6">
+                  <label class="form-label" for="claveEditar">Nueva contraseña</label>
+                  <input id="claveEditar" class="form-control" type="password" name="clave" autocomplete="new-password" [(ngModel)]="formulario.clave" required>
+                </div>
+                <div class="col-sm-6">
+                  <label class="form-label" for="claveConfirmacionEditar">Confirmar contraseña</label>
+                  <input id="claveConfirmacionEditar" class="form-control" type="password" name="claveConfirmacion" autocomplete="new-password" [(ngModel)]="formulario.claveConfirmacion" required>
+                </div>
+              </div>
+            } @else if (usuarioSeleccionado) {
+              <div class="row g-3">
+                <div class="col-sm-6">
+                  <span class="text-muted small d-block">Nombre completo</span>
+                  <strong>{{ usuarioSeleccionado.nombre }} {{ usuarioSeleccionado.apellido }}</strong>
+                </div>
+                <div class="col-sm-6">
+                  <span class="text-muted small d-block">CUI</span>
+                  <strong>{{ usuarioSeleccionado.cui }}</strong>
+                </div>
+                <div class="col-sm-6">
+                  <span class="text-muted small d-block">Nombre de usuario</span>
+                  <strong>{{ usuarioSeleccionado.usuario }}</strong>
+                </div>
+                <div class="col-sm-6">
+                  <span class="text-muted small d-block">Rol</span>
+                  <strong>{{ nombreRol(usuarioSeleccionado.rolUsuario) }}</strong>
+                </div>
+                <div class="col-sm-6">
+                  <span class="text-muted small d-block">Fecha de nacimiento</span>
+                  <strong>{{ usuarioSeleccionado.fechaNacimiento || 'No disponible' }}</strong>
+                </div>
+                <div class="col-sm-6">
+                  <span class="text-muted small d-block">Fecha de contratación</span>
+                  <strong>{{ usuarioSeleccionado.fechaContratacion || 'No disponible' }}</strong>
+                </div>
+                <div class="col-sm-6">
+                  <span class="text-muted small d-block">Salario</span>
+                  <strong>{{ usuarioSeleccionado.salario }}</strong>
+                </div>
+              </div>
+            }
+
+            @if (modo !== 'ver') {
+              <div class="d-flex justify-content-end gap-2 mt-4">
+                @if (modo === 'editar') {
+                  <button class="btn btn-outline-secondary" type="button" (click)="cancelarEdicion()">Cancelar</button>
+                }
+                <button class="btn btn-primary" type="submit" [disabled]="guardando">
+                  @if (guardando) {
+                    <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+                  } @else {
+                    <i class="bi bi-check-lg me-2"></i>
+                  }
+                  {{ modo === 'crear' ? 'Crear usuario' : 'Guardar cambios' }}
+                </button>
+              </div>
+            }
+          </form>
+        }
+      </div>
+    </section>
+  </div>
+
+  <footer class="text-center text-muted small mt-5 py-3 border-top">
+    Code 'n Bugs · Plataforma de gestión escolar
+  </footer>
+</div>
