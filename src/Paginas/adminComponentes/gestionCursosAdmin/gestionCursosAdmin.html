@@ -1,0 +1,60 @@
+<section class="container-fluid bg-light py-3">
+  <h1 class="h3 fw-bold">Cursos</h1>
+  @if (mensaje) { <div class="alert alert-success alert-dismissible" role="status">{{ mensaje }}<button type="button" class="btn-close" aria-label="Cerrar mensaje" (click)="mensaje = ''"></button></div> }
+  @if (error) { <div class="alert alert-danger alert-dismissible" role="alert">{{ error }}<button type="button" class="btn-close" aria-label="Cerrar mensaje" (click)="error = ''"></button></div> }
+
+  <div class="card border-0 shadow-sm p-3 mb-4">
+    <h2 class="h5">{{ cursoSeleccionado ? 'Modificar curso' : 'Registrar curso' }}</h2>
+    <form #formulario="ngForm" (ngSubmit)="guardarCurso(formulario)" class="row g-3 align-items-end">
+      <div class="col-md-6">
+        <label class="form-label" for="nombreCurso">Nombre del curso</label>
+        <input id="nombreCurso" class="form-control" name="nombreCurso" [(ngModel)]="nombreCurso" required>
+      </div>
+      <div class="col-auto">
+        <button class="btn btn-primary" type="submit" [disabled]="guardando || formulario.invalid">
+          {{ cursoSeleccionado ? 'Guardar cambios' : 'Registrar' }}
+        </button>
+      </div>
+      @if (cursoSeleccionado) {
+        <div class="col-auto"><button class="btn btn-outline-secondary" type="button" (click)="cancelarEdicion()">Cancelar</button></div>
+      }
+    </form>
+  </div>
+
+  <div class="card border-0 shadow-sm p-3">
+    <div class="row g-3 align-items-end mb-3">
+      <div class="col-md-4">
+        <label class="form-label" for="estadoCurso">Estado</label>
+        <select id="estadoCurso" class="form-select" name="estado" [(ngModel)]="estado" (ngModelChange)="cambiarFiltroEstado()">
+          <option value="ACTIVO">Activos</option><option value="INACTIVO">Inactivos</option>
+        </select>
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light"><tr><th>ID</th><th>Curso</th><th>Acciones</th></tr></thead>
+        <tbody>
+          @if (!cargando && cursos.length === 0) {
+            <tr><td colspan="3" class="text-center text-muted">No hay cursos para mostrar.</td></tr>
+          } @else if (cursos.length > 0) {
+            @for (curso of cursos; track curso.idCurso) {
+              <tr>
+                <td>{{ curso.idCurso }}</td><td>{{ curso.nombreCurso }}</td>
+                <td class="text-nowrap">
+                  <button class="btn btn-sm btn-outline-primary me-2" type="button" (click)="seleccionarCurso(curso)">Modificar</button>
+                  <button class="btn btn-sm btn-outline-warning" type="button" (click)="cambiarEstado(curso)">Activar/Desactivar</button>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+    <app-paginacion-lista
+      [pagina]="pagina"
+      [totalPaginas]="totalPaginas"
+      [totalElementos]="totalCursos"
+      [cargando]="cargando"
+      (paginaCambiada)="cambiarPagina($event)" />
+  </div>
+</section>

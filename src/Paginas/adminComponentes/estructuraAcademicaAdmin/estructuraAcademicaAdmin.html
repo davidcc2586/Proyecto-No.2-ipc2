@@ -1,0 +1,89 @@
+<section class="container-fluid bg-light py-3">
+  <h1 class="h3 fw-bold">Grados y secciones</h1>
+  @if (mensaje) { <div class="alert alert-success alert-dismissible" role="status">{{ mensaje }}<button type="button" class="btn-close" aria-label="Cerrar mensaje" (click)="mensaje = ''"></button></div> }
+  @if (error) { <div class="alert alert-danger alert-dismissible" role="alert">{{ error }}<button type="button" class="btn-close" aria-label="Cerrar mensaje" (click)="error = ''"></button></div> }
+
+  <div class="row g-4">
+    <div class="col-xl-6">
+      <div class="card border-0 shadow-sm p-3">
+        <h2 class="h5">{{ gradoSeleccionado ? 'Modificar grado' : 'Registrar grado' }}</h2>
+        <form #formularioGrado="ngForm" (ngSubmit)="guardarGrado(formularioGrado)">
+          <div class="mb-3"><label class="form-label" for="nombreGrado">Nombre del grado</label><input id="nombreGrado" class="form-control" name="nombreGrado" [(ngModel)]="gradoForm.nombreGrado" required></div>
+          <div class="mb-3"><label class="form-label" for="tipoGrado">Nivel</label>
+            <select id="tipoGrado" class="form-select" name="gradoColegio" [(ngModel)]="gradoForm.gradoColegio" (ngModelChange)="cambiarTipoGrado($event)" required>
+              <option value="">Selecciona nivel</option>
+              @for (tipo of tiposGrado; track tipo.key) { <option [value]="tipo.key">{{ tipo.nombre }}</option> }
+            </select>
+          </div>
+          <div class="mb-3"><label class="form-label" for="carreraGrado">Carrera</label>
+            <select id="carreraGrado" class="form-select" name="idCarrera" [(ngModel)]="gradoForm.idCarrera" [required]="gradoForm.gradoColegio === 'DIVERSIFICADO'">
+              <option [value]="gradoForm.gradoColegio === 'DIVERSIFICADO' ? '' : '0'">
+                {{ gradoForm.gradoColegio === 'DIVERSIFICADO' ? 'Selecciona carrera' : 'No aplica' }}
+              </option>
+              @for (carrera of carreras; track carrera.idCarrera) { <option [value]="carrera.idCarrera">{{ carrera.nombreCarrera }}</option> }
+            </select>
+          </div>
+          <button class="btn btn-primary" type="submit" [disabled]="guardando || formularioGrado.invalid">{{ gradoSeleccionado ? 'Guardar cambios' : 'Registrar grado' }}</button>
+          @if (gradoSeleccionado) { <button class="btn btn-outline-secondary ms-2" type="button" (click)="cancelarGrado()">Cancelar</button> }
+        </form>
+        <hr>
+        <h3 class="h6">Grados registrados</h3>
+        <div class="list-group">
+          @for (grado of grados; track grado.idGrado) {
+            <button class="list-group-item list-group-item-action text-start" type="button" (click)="seleccionarGrado(grado)">
+              {{ grado.nombreGrado }} <small class="text-muted">({{ grado.gradoColegio }})</small>
+            </button>
+          } @empty { <div class="text-muted small">No hay grados registrados.</div> }
+        </div>
+        <app-paginacion-lista
+          [pagina]="paginaGrados"
+          [totalPaginas]="totalPaginasGrados"
+          [totalElementos]="totalGrados"
+          [cargando]="cargando"
+          (paginaCambiada)="cambiarPaginaGrados($event)" />
+      </div>
+    </div>
+
+    <div class="col-xl-6">
+      <div class="card border-0 shadow-sm p-3">
+        <h2 class="h5">{{ seccionSeleccionada ? 'Modificar sección' : 'Registrar sección' }}</h2>
+        <form #formularioSeccion="ngForm" (ngSubmit)="guardarSeccion(formularioSeccion)">
+          <div class="mb-3"><label class="form-label" for="gradoSeccion">Grado</label>
+            <select id="gradoSeccion" class="form-select" name="idGrado" [(ngModel)]="seccionForm.idGrado" (ngModelChange)="cargarSecciones()" required>
+              <option value="">Selecciona un grado</option>
+              @for (grado of gradosSelect; track grado.idGrado) { <option [value]="grado.idGrado">{{ grado.nombreGrado }}</option> }
+            </select>
+          </div>
+          <div class="mb-3"><label class="form-label" for="anioSeccion">Año lectivo</label>
+            <select id="anioSeccion" class="form-select" name="anio" [(ngModel)]="seccionForm.anio" required>
+              <option value="">Selecciona un año</option>
+              @for (anio of anios; track anio.anioLectivo) { <option [value]="anio.anioLectivo">{{ anio.anioLectivo }}</option> }
+            </select>
+          </div>
+          <div class="mb-3"><label class="form-label" for="letraSeccion">Sección</label>
+            <select id="letraSeccion" class="form-select" name="nombreSeccion" [(ngModel)]="seccionForm.nombreSeccion" required>
+              <option value="">Selecciona sección</option>
+              @for (letra of letrasSeccion; track letra) { <option [value]="letra">{{ letra }}</option> }
+            </select>
+          </div>
+          <button class="btn btn-primary" type="submit" [disabled]="guardando || formularioSeccion.invalid">{{ seccionSeleccionada ? 'Guardar cambios' : 'Registrar sección' }}</button>
+          @if (seccionSeleccionada) { <button class="btn btn-outline-secondary ms-2" type="button" (click)="cancelarSeccion()">Cancelar</button> }
+        </form>
+        <hr>
+        <h3 class="h6">Secciones del grado seleccionado</h3>
+        <div class="list-group">
+          @for (seccion of secciones; track seccion.idSeccion) {
+            <button class="list-group-item list-group-item-action text-start" type="button" (click)="seleccionarSeccion(seccion)">
+              Sección {{ seccion.seccion }} · {{ seccion.anio }}
+            </button>
+          } @empty { <div class="text-muted small">Selecciona un grado para consultar sus secciones.</div> }
+        </div>
+        <app-paginacion-lista
+          [pagina]="paginaSecciones"
+          [totalPaginas]="totalPaginasSecciones"
+          [totalElementos]="totalSecciones"
+          (paginaCambiada)="cambiarPaginaSecciones($event)" />
+      </div>
+    </div>
+  </div>
+</section>

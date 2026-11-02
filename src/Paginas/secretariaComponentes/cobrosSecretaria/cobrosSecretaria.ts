@@ -3,8 +3,10 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { PagoRequest } from '../../../Objetos/objetosRequest/PagoRequest';
 import { EstudianteSelectResponse } from '../../../Objetos/objetosResponse/EstudianteSelectResponse';
+import { UsuarioSelectResponse } from '../../../Objetos/objetosResponse/UsuarioSelectResponse';
 import { EstudianteService } from '../../accesorios/servicios/estudiante.service';
 import { PagoService } from '../../accesorios/servicios/pago.service';
+import { UsuarioService } from '../../accesorios/servicios/usuario.service';
 
 @Component({
   selector: 'app-cobros-secretaria',
@@ -20,13 +22,17 @@ export class CobrosSecretaria implements OnInit {
   ];
 
   estudiantes: EstudianteSelectResponse[] = [];
+  secretarios: UsuarioSelectResponse[] = [];
   idEstudiante = '';
   idSecretario = '';
   tipoPago = '';
   cantidad = '';
   descripcion = '';
+  nombreConsumidor = 'CONSUMIDOR FINAL';
+  nit = 'CF';
   fecha = this.fechaHoy();
   cargandoEstudiantes = false;
+  cargandoSecretarios = false;
   guardando = false;
   mensaje = '';
   error = '';
@@ -34,6 +40,7 @@ export class CobrosSecretaria implements OnInit {
   constructor(
     private readonly estudianteService: EstudianteService,
     private readonly pagoService: PagoService,
+    private readonly usuarioService: UsuarioService,
     private readonly changeDetector: ChangeDetectorRef,
   ) {}
 
@@ -51,6 +58,20 @@ export class CobrosSecretaria implements OnInit {
         this.changeDetector.markForCheck();
       },
     });
+
+    this.cargandoSecretarios = true;
+    this.usuarioService.obtenerSecretariosSelect().subscribe({
+      next: (secretarios) => {
+        this.secretarios = secretarios;
+        this.cargandoSecretarios = false;
+        this.changeDetector.markForCheck();
+      },
+      error: (error: HttpErrorResponse) => {
+        this.cargandoSecretarios = false;
+        this.error = this.mensajeError(error, 'No se pudieron cargar los secretarios.');
+        this.changeDetector.markForCheck();
+      },
+    });
   }
 
   registrarPago(formulario: NgForm): void {
@@ -63,7 +84,7 @@ export class CobrosSecretaria implements OnInit {
       Number(this.idSecretario) <= 0
     ) {
       formulario.control.markAllAsTouched();
-      this.error = 'Completa los datos del cobro e ingresa un ID de secretario válido.';
+      this.error = 'Completa todos los datos del cobro y selecciona un secretario válido.';
       return;
     }
 
@@ -75,11 +96,13 @@ export class CobrosSecretaria implements OnInit {
       this.cantidad,
       this.descripcion,
       this.fecha,
+      this.nombreConsumidor,
+      this.nit,
     );
 
     this.pagoService.registrarPago(pago).subscribe({
       next: (respuesta) => {
-        this.mensaje = respuesta?.mensaje ?? 'El pago se registró correctamente.';
+        this.mensaje = `${respuesta?.mensaje ?? 'El pago se registró y su factura fue emitida.'} Número de factura: ${respuesta.idFactura}.`;
         this.guardando = false;
         const idSecretario = this.idSecretario;
         formulario.resetForm();
@@ -88,6 +111,8 @@ export class CobrosSecretaria implements OnInit {
         this.tipoPago = '';
         this.cantidad = '';
         this.descripcion = '';
+        this.nombreConsumidor = 'CONSUMIDOR FINAL';
+        this.nit = 'CF';
         this.fecha = this.fechaHoy();
         this.changeDetector.markForCheck();
       },

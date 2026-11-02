@@ -1,0 +1,13 @@
+<div class="container-fluid min-vh-100 d-flex flex-column p-0 bg-light">
+  <app-cabecera rol="Estudiante" />
+  <div class="container-fluid flex-grow-1 p-0">
+    <div class="row g-0">
+      <app-menu-lateral-estudiante
+        class="col-lg-2 d-none d-lg-flex flex-column bg-white border-end align-self-start position-sticky top-0 overflow-auto"
+        style="height: calc(100vh - 56px)" />
+      <main class="col-lg-10 col-12 p-4">
+        <router-outlet />
+      </main>
+    </div>
+  </div>
+</div>

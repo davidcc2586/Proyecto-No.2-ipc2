@@ -15,8 +15,16 @@ export const rolGuard: CanActivateFn = (route) => {
     return router.createUrlTree(['/iniciar-sesion']);
   }
 
-  const rutaPermitida = route.data['rutaPermitida'] as string;
-  if (rutaUsuario === rutaPermitida) {
+  const rolesPermitidos = (
+    route.data['allowedRoles'] ??
+    route.parent?.data['allowedRoles']
+  ) as string[] | undefined;
+  if (!rolesPermitidos?.length) {
+    return router.createUrlTree(['/iniciar-sesion']);
+  }
+
+  const rolUsuario = String(sesion.rolUsuario).toUpperCase();
+  if (rolesPermitidos.some((rol) => rol.toUpperCase() === rolUsuario)) {
     return true;
   }
 

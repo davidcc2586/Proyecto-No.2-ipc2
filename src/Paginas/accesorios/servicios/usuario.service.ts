@@ -4,6 +4,8 @@ import { Observable } from 'rxjs';
 import { UsuarioActualizarRequest } from '../../../Objetos/objetosRequest/UsuarioActualizarRequest';
 import { UsuarioRequest } from '../../../Objetos/objetosRequest/UsuarioRequest';
 import { Usuario } from '../../../Objetos/objetosResponse/Usuario';
+import { UsuarioSelectResponse } from '../../../Objetos/objetosResponse/UsuarioSelectResponse';
+import { PaginaResponse } from '../../../Objetos/objetosResponse/PaginaResponse';
 
 @Injectable({ providedIn: 'root' })
 export class UsuarioService {
@@ -17,8 +19,25 @@ export class UsuarioService {
     );
   }
 
+  obtenerUsuariosPorRolPaginados(rolUsuario: string,pagina: number,tamano = 7,): Observable<PaginaResponse<Usuario>> {
+    return this.http.get<PaginaResponse<Usuario>>(
+      `${this.baseUrl}/clasificarPaginado/${encodeURIComponent(rolUsuario)}`,
+      { params: { pagina, tamano } },
+    );
+  }
+
   obtenerUsuario(idUsuario: number): Observable<Usuario> {
     return this.http.get<Usuario>(`${this.baseUrl}/datosUsuario/${idUsuario}`);
+  }
+
+  obtenerUsuariosSelect(rolUsuario: string): Observable<UsuarioSelectResponse[]> {
+    return this.http.get<UsuarioSelectResponse[]>(
+      `${this.baseUrl}/selects/${encodeURIComponent(rolUsuario)}`,
+    );
+  }
+
+  obtenerSecretariosSelect(): Observable<UsuarioSelectResponse[]> {
+    return this.http.get<UsuarioSelectResponse[]>(`${this.baseUrl}/selectSecretarios`);
   }
 
   crearUsuario(usuario: UsuarioRequest): Observable<void> {

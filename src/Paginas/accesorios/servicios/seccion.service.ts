@@ -5,6 +5,7 @@ import { SeccionActualizarRequest } from '../../../Objetos/objetosRequest/Seccio
 import { SeccionRequest } from '../../../Objetos/objetosRequest/SeccionRequest';
 import { Seccion } from '../../../Objetos/objetosResponse/Seccion';
 import { RestConstants } from './rest-constants';
+import { PaginaResponse } from '../../../Objetos/objetosResponse/PaginaResponse';
 
 @Injectable({ providedIn: 'root' })
 export class SeccionService {
@@ -15,6 +16,13 @@ export class SeccionService {
   obtenerSeccionesDeGrado(idGrado: number): Observable<Seccion[]> {
     return this.http.get<Seccion[]>(
       `${this.baseUrl}/catalogoSeccion/${idGrado}`,
+    );
+  }
+
+  obtenerSeccionesDeGradoPaginadas(idGrado: number,pagina: number,tamano = 10,): Observable<PaginaResponse<Seccion>> {
+    return this.http.get<PaginaResponse<Seccion>>(
+      `${this.baseUrl}/catalogoSeccionPaginado/${idGrado}`,
+      { params: { pagina, tamano } },
     );
   }
 

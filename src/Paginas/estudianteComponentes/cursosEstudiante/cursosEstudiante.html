@@ -1,0 +1,21 @@
+<section class="container-fluid bg-light py-3">
+  <h1 class="h3 fw-bold">Mis cursos</h1>
+  @if (error) { <div class="alert alert-danger alert-dismissible" role="alert">{{ error }}<button type="button" class="btn-close" aria-label="Cerrar mensaje" (click)="error = ''"></button></div> }
+  <div class="card border-0 shadow-sm p-3">
+    @if (!cargando && cursos.length === 0) {
+      <p class="text-muted mb-0">No tienes cursos asignados.</p>
+    } @else if (cursos.length > 0) {
+      <ul class="list-group list-group-flush">
+        @for (curso of cursos; track curso.idCurso) {
+          <li class="list-group-item">{{ curso.nombreCurso }}</li>
+        }
+      </ul>
+    }
+    <app-paginacion-lista
+      [pagina]="pagina"
+      [totalPaginas]="totalPaginas"
+      [totalElementos]="totalCursos"
+      [cargando]="cargando"
+      (paginaCambiada)="cambiarPagina($event)" />
+  </div>
+</section>

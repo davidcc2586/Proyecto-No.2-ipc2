@@ -1,0 +1,18 @@
+<div class="p-3 d-flex flex-column h-100">
+  <div class="text-muted small fw-bold mb-3">MENÚ PRINCIPAL</div>
+  <nav class="nav flex-column gap-1 flex-grow-1">
+    <a class="nav-link text-dark" routerLink="/inicioAdmin/usuarios">Usuarios y personal</a>
+    <a class="nav-link text-dark" routerLink="/inicioAdmin/cursos">Cursos</a>
+    <a class="nav-link text-dark" routerLink="/inicioAdmin/estructura">Grados y secciones</a>
+    <a class="nav-link text-dark" routerLink="/inicioAdmin/curriculo">Currículo y maestros</a>
+    <a class="nav-link text-dark" routerLink="/inicioAdmin/carreras">Carreras</a>
+    <a class="nav-link text-dark" routerLink="/inicioAdmin/estudiantes">Estudiantes</a>
+    <a class="nav-link text-dark" routerLink="/inicioAdmin/reportes">Reportes</a>
+    <a
+      class="nav-link text-danger mt-auto"
+      routerLink="/iniciar-sesion"
+      (click)="cerrarSesion()">
+      Cerrar sesión
+    </a>
+  </nav>
+</div>

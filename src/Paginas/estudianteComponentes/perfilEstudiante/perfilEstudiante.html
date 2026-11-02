@@ -1,0 +1,20 @@
+<section class="container-fluid bg-light py-3">
+  <h1 class="h3 fw-bold">Mi perfil</h1>
+  @if (error) { <div class="alert alert-danger alert-dismissible" role="alert">{{ error }}<button type="button" class="btn-close" aria-label="Cerrar mensaje" (click)="error = ''"></button></div> }
+  <div class="card border-0 shadow-sm p-3">
+    @if (!cargando && estudiante) {
+      <div class="row g-3">
+        <div class="col-md-4"><span class="small text-muted d-block">CUI</span><strong>{{ estudiante.cui }}</strong></div>
+        <div class="col-md-4"><span class="small text-muted d-block">Nombre completo</span><strong>{{ estudiante.nombre }} {{ estudiante.apellido }}</strong></div>
+        <div class="col-md-4"><span class="small text-muted d-block">Fecha de nacimiento</span><strong>{{ estudiante.fechaNacimiento }}</strong></div>
+        <div class="col-md-4"><span class="small text-muted d-block">Año de inscripción</span><strong>{{ estudiante.anioInscripcion }}</strong></div>
+        <div class="col-md-4"><span class="small text-muted d-block">Estado</span><strong>{{ estudiante.estadoEstudiante }}</strong></div>
+        <div class="col-md-4"><span class="small text-muted d-block">Tipo de sangre</span><strong>{{ estudiante.tipoSangre }}</strong></div>
+        <div class="col-md-4"><span class="small text-muted d-block">Alergias</span><strong>{{ estudiante.alergia }}</strong></div>
+        <div class="col-md-4"><span class="small text-muted d-block">Encargado</span><strong>{{ estudiante.nombreEncargado }}</strong></div>
+        <div class="col-md-4"><span class="small text-muted d-block">Teléfono encargado</span><strong>{{ estudiante.telefonoEncargado }}</strong></div>
+        <div class="col-md-4"><span class="small text-muted d-block">Correo encargado</span><strong>{{ estudiante.correoEncargado }}</strong></div>
+      </div>
+    }
+  </div>
+</section>

@@ -1,0 +1,189 @@
+<section class="container-fluid bg-light py-3">
+  <h1 class="h3 fw-bold">Consulta de estudiantes</h1>
+  <p class="text-muted">Consulta estudiantes por su estado.</p>
+
+  @if (mensaje) {
+    <div class="alert alert-success alert-dismissible" role="status">{{ mensaje }}<button type="button" class="btn-close" aria-label="Cerrar mensaje" (click)="mensaje = ''"></button></div>
+  }
+  @if (error) {
+    <div class="alert alert-danger alert-dismissible" role="alert">{{ error }}<button type="button" class="btn-close" aria-label="Cerrar mensaje" (click)="error = ''"></button></div>
+  }
+
+  <div class="card border-0 shadow-sm p-3 mb-4">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label" for="estadoEstudiante">Estado</label>
+        <select id="estadoEstudiante" class="form-select" name="estadoEstudiante"
+          [(ngModel)]="estadoSeleccionado" (ngModelChange)="cargarEstudiantes()">
+          @for (estado of estados; track estado.valor) {
+            <option [value]="estado.valor">{{ estado.nombre }}</option>
+          }
+        </select>
+      </div>
+    </div>
+    <div class="table-responsive mt-3">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr><th>ID</th><th>Estudiante</th>@if (puedeVerExpediente) { <th>Acciones</th> }</tr>
+        </thead>
+        <tbody>
+          @if (!cargando && estudiantes.length === 0) {
+            <tr><td [attr.colspan]="puedeVerExpediente ? 3 : 2" class="text-center text-muted">No hay estudiantes para mostrar.</td></tr>
+          } @else if (estudiantes.length > 0) {
+            @for (estudiante of estudiantes; track estudiante.idEstudiante) {
+              <tr>
+                <td>{{ estudiante.idEstudiante }}</td>
+                <td>{{ estudiante.nombre }} {{ estudiante.apellido }}</td>
+                @if (puedeVerExpediente) {
+                  <td class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-primary" type="button" (click)="consultarDatosEstudiante(estudiante)">
+                      {{ esAdmin ? 'Ver / modificar' : 'Ver expediente' }}
+                    </button>
+                    @if (esAdmin) {
+                      <select class="form-select form-select-sm w-auto" [name]="'estadoNuevo' + estudiante.idEstudiante" [(ngModel)]="estadoNuevoPorEstudiante[estudiante.idEstudiante]">
+                        @for (estado of estados; track estado.valor) {
+                          @if (estado.valor !== estadoSeleccionado) {
+                            <option [value]="estado.valor">{{ estado.nombre }}</option>
+                          }
+                        }
+                      </select>
+                      <button class="btn btn-sm btn-outline-warning" type="button" [disabled]="!estadoNuevoPorEstudiante[estudiante.idEstudiante]" (click)="cambiarEstadoEstudiante(estudiante)">Cambiar estado</button>
+                    }
+                  </td>
+                }
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+    <app-paginacion-lista
+      [pagina]="paginaEstudiantes"
+      [totalPaginas]="totalPaginasEstudiantes"
+      [totalElementos]="totalEstudiantes"
+      [cargando]="cargando"
+      (paginaCambiada)="cambiarPaginaEstudiantes($event)" />
+  </div>
+
+  @if (puedeVerExpediente && datosEstudianteSeleccionado) {
+    <div class="row g-4">
+      <div class="col-12">
+        <div class="card border-0 shadow-sm p-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h2 class="h5 fw-bold">{{ datosEstudianteSeleccionado.nombre }} {{ datosEstudianteSeleccionado.apellido }}</h2>
+              <p class="text-muted mb-0">CUI: {{ datosEstudianteSeleccionado.cui }} · Estado: {{ datosEstudianteSeleccionado.estadoEstudiante }}</p>
+            </div>
+            @if (esAdmin && !editarDatosEstudiante) {
+              <button class="btn btn-outline-primary btn-sm" type="button" (click)="editarDatosEstudiante = true">Editar datos de encargado</button>
+            }
+          </div>
+          @if (esAdmin && editarDatosEstudiante) {
+            <form #formularioEditarEstudiante="ngForm" (ngSubmit)="guardarDatosEstudiante(formularioEditarEstudiante)" class="row g-3 mt-2">
+              <div class="col-md-6"><label class="form-label" for="editarAlergia">Alergias</label><input id="editarAlergia" class="form-control" name="alergia" [(ngModel)]="datosEncargado.alergia"></div>
+              <div class="col-md-6"><label class="form-label" for="editarEncargado">Nombre de encargado</label><input id="editarEncargado" class="form-control" name="nombreEncargado" [(ngModel)]="datosEncargado.nombreEncargado"></div>
+              <div class="col-md-6"><label class="form-label" for="editarTelefono">Teléfono de encargado</label><input id="editarTelefono" class="form-control" type="number" name="telefonoEncargado" [(ngModel)]="datosEncargado.telefonoEncargado"></div>
+              <div class="col-md-6"><label class="form-label" for="editarCorreo">Correo de encargado</label><input id="editarCorreo" class="form-control" type="email" name="correoEncargado" [(ngModel)]="datosEncargado.correoEncargado"></div>
+              <div class="col-12">
+                <button class="btn btn-primary me-2" type="submit" [disabled]="guardando">Guardar</button>
+                <button class="btn btn-outline-secondary" type="button" (click)="editarDatosEstudiante = false">Cancelar</button>
+              </div>
+            </form>
+          } @else {
+            <div class="row g-2 mt-2 small">
+              <div class="col-md-4"><strong>Fecha de nacimiento:</strong> {{ datosEstudianteSeleccionado.fechaNacimiento }}</div>
+              <div class="col-md-4"><strong>Año de inscripción:</strong> {{ datosEstudianteSeleccionado.anioInscripcion }}</div>
+              <div class="col-md-4"><strong>Tipo de sangre:</strong> {{ datosEstudianteSeleccionado.tipoSangre }}</div>
+              <div class="col-md-4"><strong>Alergias:</strong> {{ datosEstudianteSeleccionado.alergia }}</div>
+              <div class="col-md-4"><strong>Encargado:</strong> {{ datosEstudianteSeleccionado.nombreEncargado }}</div>
+              <div class="col-md-4"><strong>Teléfono:</strong> {{ datosEstudianteSeleccionado.telefonoEncargado }}</div>
+              <div class="col-md-4"><strong>Correo:</strong> {{ datosEstudianteSeleccionado.correoEncargado }}</div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+
+  <br>
+  @if (esAdmin) {
+    <div class="row g-4">
+      <div class="col-12">
+        <div class="card border-0 shadow-sm p-3">
+          <h2 class="h5 fw-bold">Consultar expediente por sección</h2>
+          <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+              <label class="form-label" for="gradoExpediente">Grado</label>
+              <select id="gradoExpediente" class="form-select" name="idGradoExpediente" [(ngModel)]="idGradoExpediente" (ngModelChange)="cargarSeccionesExpediente()">
+                <option value="">Selecciona un grado</option>
+                @for (grado of grados; track grado.idGrado) { <option [value]="grado.idGrado">{{ grado.nombreGrado }}</option> }
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="seccionExpediente">Sección</label>
+              <select id="seccionExpediente" class="form-select" name="idSeccionExpediente" [(ngModel)]="idSeccionExpediente" (ngModelChange)="cambiarSeccionExpediente()">
+                <option value="">Selecciona una sección</option>
+                @for (seccion of seccionesExpediente; track seccion.idSeccion) { <option [value]="seccion.idSeccion">{{ seccion.seccion }} · {{ seccion.anio }}</option> }
+              </select>
+            </div>
+            <div class="col-md-4">
+              <button class="btn btn-outline-primary" type="button" [disabled]="!idSeccionExpediente" (click)="cargarExpedientes()">Consultar</button>
+            </div>
+          </div>
+          <div class="table-responsive mt-3">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light"><tr><th>Estudiante</th><th>CUI</th><th>Acción</th></tr></thead>
+              <tbody>
+                @if (!cargandoExpedientes) {
+                @for (estudiante of estudiantesDeSeccion; track estudiante.idEstudiante) {
+                  <tr>
+                    <td>{{ estudiante.nombre }} {{ estudiante.apellido }}</td>
+                    <td>{{ estudiante.cui }}</td>
+                    <td>                    <button class="btn btn-sm btn-outline-primary" type="button" (click)="consultarDatosEstudiante(estudiante)">Ver expediente</button></td>
+                  </tr>
+                } @empty {
+                  <tr><td colspan="3" class="text-center text-muted">Selecciona sección y consulta sus estudiantes.</td></tr>
+                }
+                }
+              </tbody>
+            </table>
+          </div>
+          <app-paginacion-lista
+            [pagina]="paginaExpedientes"
+            [totalPaginas]="totalPaginasExpedientes"
+            [totalElementos]="totalExpedientes"
+            [cargando]="cargandoExpedientes"
+            (paginaCambiada)="cambiarPaginaExpedientes($event)" />
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="card border-0 shadow-sm p-3">
+          <h2 class="h5 fw-bold">Inscribir en sección</h2>
+          <form #formularioInscripcionEstudiante="ngForm" (ngSubmit)="asignarEstudiante(formularioInscripcionEstudiante)">
+            <div class="mb-3"><label class="form-label" for="estudianteAsignar">Estudiante activo</label>
+              <select id="estudianteAsignar" class="form-select" name="idEstudiante" [(ngModel)]="estudianteSeleccionado" required>
+                <option value="">Selecciona un estudiante</option>
+                @for (estudiante of estudiantesActivos; track estudiante.idEstudiante) { <option [value]="estudiante.idEstudiante">{{ estudiante.nombreCompleto }}</option> }
+              </select>
+            </div>
+            <div class="mb-3"><label class="form-label" for="gradoAsignar">Grado</label>
+              <select id="gradoAsignar" class="form-select" name="idGrado" [(ngModel)]="idGradoSeleccionado" (ngModelChange)="cargarSecciones()" required>
+                <option value="">Selecciona un grado</option>
+                @for (grado of grados; track grado.idGrado) { <option [value]="grado.idGrado">{{ grado.nombreGrado }}</option> }
+              </select>
+            </div>
+            <div class="mb-3"><label class="form-label" for="seccionAsignar">Sección</label>
+              <select id="seccionAsignar" class="form-select" name="idSeccion" [(ngModel)]="idSeccionSeleccionada" required>
+                <option value="">Selecciona una sección</option>
+                @for (seccion of secciones; track seccion.idSeccion) { <option [value]="seccion.idSeccion">{{ seccion.seccion }} - {{ seccion.anio }}</option> }
+              </select>
+            </div>
+            <button class="btn btn-primary" type="submit" [disabled]="guardando || formularioInscripcionEstudiante.invalid">
+              Inscribir estudiante
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  }
+</section>

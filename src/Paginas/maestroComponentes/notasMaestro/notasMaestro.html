@@ -1,0 +1,78 @@
+<section class="container-fluid bg-light py-3">
+  <h1 class="h3 fw-bold">Actividades y notas</h1>
+  @if (mensaje) { <div class="alert alert-success alert-dismissible" role="status">{{ mensaje }}<button type="button" class="btn-close" aria-label="Cerrar mensaje" (click)="mensaje = ''"></button></div> }
+  @if (error) { <div class="alert alert-danger alert-dismissible" role="alert">{{ error }}<button type="button" class="btn-close" aria-label="Cerrar mensaje" (click)="error = ''"></button></div> }
+
+  <div class="card border-0 shadow-sm p-3 mb-4">
+    <div class="mb-3">
+      <label class="form-label" for="asignacionMaestro">Curso y sección asignados</label>
+      <select id="asignacionMaestro" class="form-select" name="asignacion" [(ngModel)]="idAsignacion" (ngModelChange)="cambiarAsignacion()">
+        <option value="">Selecciona una asignación</option>
+        @for (asignacion of asignaciones; track asignacion.idCurso + '-' + asignacion.idSeccion) {
+          <option [value]="asignacion.idCurso + '-' + asignacion.idSeccion">{{ textoAsignacion(asignacion) }}</option>
+        }
+      </select>
+    </div>
+    @if (asignaciones.length === 0) {
+      <p class="small text-muted mb-0">No tienes cursos y secciones asignados.</p>
+    }
+  </div>
+
+  @if (idCurso && idSeccion) {
+    <div class="card border-0 shadow-sm p-3 mb-4">
+      <h2 class="h5">Definir actividad y ponderación</h2>
+      <form #formularioActividad="ngForm" (ngSubmit)="registrarActividad(formularioActividad)" class="row g-3 align-items-end">
+        <div class="col-md-4">
+          <label class="form-label" for="nombreActividad">Actividad</label>
+          <input id="nombreActividad" class="form-control" name="nombre" [(ngModel)]="actividadForm.nombre" required>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label" for="ponderacion">Ponderación</label>
+          <input id="ponderacion" class="form-control" type="number" min="0" max="100" step="0.01" name="ponderacion" [(ngModel)]="actividadForm.ponderacion" required>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label" for="tipoActividad">Tipo</label>
+          <select id="tipoActividad" class="form-select" name="tipo" [(ngModel)]="actividadForm.tipo" required>
+            @for (tipo of tiposActividad; track tipo.key) { <option [value]="tipo.key">{{ tipo.nombre }}</option> }
+          </select>
+        </div>
+        <div class="col-md-2"><button class="btn btn-primary" type="submit" [disabled]="guardando || formularioActividad.invalid">Registrar</button></div>
+      </form>
+    </div>
+
+    <div class="card border-0 shadow-sm p-3">
+      <h2 class="h5">Ingreso y modificación de notas</h2>
+      <div class="mb-3">
+        <label class="form-label" for="actividadNotas">Actividad</label>
+        <select id="actividadNotas" class="form-select" name="actividad" [(ngModel)]="idActividad" (ngModelChange)="cambiarActividad()">
+          <option value="">Selecciona actividad</option>
+          @for (actividad of actividades; track actividad.idActividad) { <option [value]="actividad.idActividad">{{ actividad.nombreActividad }} · {{ actividad.ponderacion }} puntos</option> }
+        </select>
+      </div>
+      @if (idActividad) {
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-light"><tr><th>Estudiante</th><th>CUI</th><th>Punteo</th><th></th></tr></thead>
+            <tbody>
+              @for (estudiante of estudiantes; track estudiante.idEstudiante) {
+                <tr>
+                  <td>{{ estudiante.nombre }} {{ estudiante.apellido }}</td>
+                  <td>{{ estudiante.cui }}</td>
+                  <td><input class="form-control" type="number" min="0" [max]="ponderacionActividadSeleccionada()" [name]="'punteo' + estudiante.idEstudiante" [(ngModel)]="punteos[estudiante.idEstudiante]"></td>
+                  <td><button class="btn btn-sm btn-primary" type="button" [disabled]="guardando" (click)="guardarNota(estudiante)">Guardar</button></td>
+                </tr>
+              } @empty {
+                <tr><td colspan="4" class="text-center text-muted">No hay estudiantes para esta sección.</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <app-paginacion-lista
+          [pagina]="pagina"
+          [totalPaginas]="totalPaginas"
+          [totalElementos]="totalEstudiantes"
+          (paginaCambiada)="cambiarPagina($event)" />
+      }
+    </div>
+  }
+</section>

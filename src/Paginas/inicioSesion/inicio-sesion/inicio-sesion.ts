@@ -35,9 +35,7 @@ export class InicioSesion {
     this.mensaje = '';
     this.error = false;
 
-    this.inicioSesionService
-      .iniciarSesion(inicioSesionRequest.usuario, inicioSesionRequest.clave)
-      .subscribe({
+    this.inicioSesionService.iniciarSesion(inicioSesionRequest.usuario, inicioSesionRequest.clave).subscribe({
         next: (sesion) => {
           const rutaInicio = this.inicioSesionService.rutaInicio(sesion.rolUsuario);
           if (!rutaInicio) {

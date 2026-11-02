@@ -1,27 +1,10 @@
 <div class="p-3 d-flex flex-column h-100">
     <div class="text-muted small fw-bold mb-3">MENÚ PRINCIPAL</div>
-    <div class="nav flex-column nav-pills gap-1 flex-grow-1">
-    <a
-        class="nav-link text-dark d-flex align-items-center gap-2"        
-        routerLink="/inicioSuperAdmin/panelControlUsuariosAdmin"
-        routerLinkActive="active">
-        <i class="bi bi-people"></i> Usuarios admin
-    </a>
-
-    <a
-        class="nav-link text-dark d-flex align-items-center gap-2"
-        routerLink="/inicioSuperAdmin/panelConfiguracionSistema"
-        routerLinkActive="active">
-        <i class="bi bi-gear"></i> Configuración sistema
-    </a>
-
-    <a class="nav-link text-dark d-flex align-items-center gap-2" href="#reportes"><i class="bi bi-file-earmark-text"></i> Reportes</a>  
-    <a class="nav-link text-dark d-flex align-items-center gap-2" routerLink="/inicioSuperAdmin/panelInicio">
-        <i class="bi bi-house"></i> Regresar al inicio
-    </a>
-
-    <a class="nav-link text-dark d-flex align-items-center gap-2 text-danger mt-auto" routerLink="/iniciar-sesion" (click)="cerrarSesion()">
-        <i class="bi bi-box-arrow-left"></i> Cerrar sesión
-    </a>
-    </div>
+     <nav class="nav flex-column gap-1 flex-grow-1">
+    <a class="nav-link text-dark" routerLink="/inicioSuperAdmin/panelControlUsuariosAdmin">Usuarios y personal</a>
+    <a class="nav-link text-dark" routerLink="/inicioSuperAdmin/panelConfiguracionSistema">Configuración sistema</a>
+    <a class="nav-link text-dark" routerLink="/inicioSuperAdmin/reportes">Reportes</a>
+    <a class="nav-link text-dark" routerLink="/inicioSuperAdmin/panelInicio">Regresar al inicio</a>
+    <a class="nav-link text-danger mt-auto" routerLink="/iniciar-sesion" (click)="cerrarSesion()">Cerrar sesión</a>
+    </nav>
 </div>

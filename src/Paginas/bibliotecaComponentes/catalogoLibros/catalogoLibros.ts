@@ -6,6 +6,7 @@ import { LibroActualizarRequest } from '../../../Objetos/objetosRequest/LibroAct
 import { LibroRequest } from '../../../Objetos/objetosRequest/LibroRequest';
 import { Libro } from '../../../Objetos/objetosResponse/Libro';
 import { BibliotecaService } from '../../accesorios/servicios/biblioteca.service';
+import { PaginacionLista } from '../../accesorios/paginacionLista/paginacionLista';
 
 interface FormularioLibro {
   autor: string;
@@ -17,7 +18,7 @@ interface FormularioLibro {
 
 @Component({
   selector: 'app-catalogo-libros',
-  imports: [FormsModule],
+  imports: [FormsModule, PaginacionLista],
   templateUrl: './catalogoLibros.html',
 })
 export class CatalogoLibros implements OnInit {
@@ -29,6 +30,9 @@ export class CatalogoLibros implements OnInit {
   guardando = false;
   mensaje = '';
   error = '';
+  pagina = 0;
+  totalPaginas = 0;
+  totalLibros = 0;
 
   constructor(
     private readonly bibliotecaService: BibliotecaService,
@@ -42,9 +46,11 @@ export class CatalogoLibros implements OnInit {
   cargarCatalogo(): void {
     this.cargando = true;
     this.error = '';
-    this.bibliotecaService.obtenerCatalogo().subscribe({
-      next: (libros) => {
-        this.libros = libros;
+    this.bibliotecaService.obtenerCatalogoPaginado(this.pagina).subscribe({
+      next: (respuesta) => {
+        this.libros = respuesta.contenido;
+        this.totalPaginas = respuesta.totalPaginas;
+        this.totalLibros = respuesta.totalElementos;
         this.cargando = false;
         this.changeDetector.markForCheck();
       },
@@ -54,6 +60,11 @@ export class CatalogoLibros implements OnInit {
         this.changeDetector.markForCheck();
       },
     });
+  }
+
+  cambiarPagina(pagina: number): void {
+    this.pagina = pagina;
+    this.cargarCatalogo();
   }
 
   guardarLibro(formulario: NgForm): void {
@@ -78,6 +89,7 @@ export class CatalogoLibros implements OnInit {
         next: () => {
           this.guardando = false;
           this.mensaje = 'El libro se registró correctamente.';
+          this.pagina = 0;
           formulario.resetForm();
           this.formulario = this.formularioVacio();
           this.cargarCatalogo();
@@ -104,11 +116,13 @@ export class CatalogoLibros implements OnInit {
       this.formulario.anio,
       this.formulario.titulo,
       this.formulario.editorial,
+      this.formulario.cantidad,
     );
     this.bibliotecaService.actualizarLibro(request).subscribe({
       next: () => {
         this.guardando = false;
         this.mensaje = 'Los datos del libro se actualizaron correctamente.';
+        this.pagina = 0;
         this.cancelarEdicion();
         this.cargarCatalogo();
         this.changeDetector.markForCheck();
@@ -133,7 +147,7 @@ export class CatalogoLibros implements OnInit {
           anio: String(detalle.anio ?? ''),
           titulo: detalle.titulo ?? '',
           editorial: detalle.editorial ?? '',
-          cantidad: String(detalle.cantidad ?? ''),
+          cantidad: String(detalle.cantidad ?? 0),
         };
         this.changeDetector.markForCheck();
       },
@@ -151,6 +165,7 @@ export class CatalogoLibros implements OnInit {
     this.bibliotecaService.cambiarEstadoLibro(libro.idLibro).subscribe({
       next: () => {
         this.mensaje = 'El estado del libro se actualizó correctamente.';
+        this.pagina = 0;
         this.cargarCatalogo();
         this.changeDetector.markForCheck();
       },
@@ -168,6 +183,7 @@ export class CatalogoLibros implements OnInit {
     this.bibliotecaService.eliminarLibro(libro.idLibro).subscribe({
       next: () => {
         this.mensaje = 'El libro se eliminó del catálogo.';
+        this.pagina = 0;
         this.cargarCatalogo();
         this.changeDetector.markForCheck();
       },

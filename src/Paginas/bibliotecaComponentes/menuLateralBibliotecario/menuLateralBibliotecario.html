@@ -1,31 +1,12 @@
 <div class="p-3 d-flex flex-column h-100">
     <div class="text-muted small fw-bold mb-3">MENÚ PRINCIPAL</div>
     <div class="nav flex-column nav-pills gap-1 flex-grow-1">
-    <a 
-        class="nav-link text-dark d-flex align-items-center gap-2"        
-        routerLink="/inicioBibliotecario/catalogo">
-        <i class="bi bi-people"></i> Catalogo de libros
-    </a>
 
-    <a 
-        class="nav-link text-dark d-flex align-items-center gap-2"
-        routerLink="/inicioBibliotecario/prestamos">
-        <i class="bi bi-gear"></i> Prestamos
-    </a>
-
-        <a 
-        class="nav-link text-dark d-flex align-items-center gap-2"
-        routerLink="/inicioBibliotecario/devoluciones">
-        <i class="bi bi-gear"></i> Devoluciones
-    </a>
-    
-    <a class="nav-link text-dark d-flex align-items-center gap-2" href="#reportes"><i class="bi bi-file-earmark-text"></i> Reportes</a>  
-    <a class="nav-link text-dark d-flex align-items-center gap-2" routerLink="/inicioBibliotecario/catalogo">
-        <i class="bi bi-house"></i> Regresar al inicio
-    </a>
-
-    <a class="nav-link text-dark d-flex align-items-center gap-2 text-danger mt-auto" routerLink="/iniciar-sesion" (click)="cerrarSesion()">
-        <i class="bi bi-box-arrow-left"></i> Cerrar sesión
-    </a>
+    <a class="nav-link text-dark d-flex align-items-center gap-2" routerLink="/inicioBibliotecario/catalogo">Catalogo de libros </a>
+    <a class="nav-link text-dark d-flex align-items-center gap-2" routerLink="/inicioBibliotecario/prestamos">Prestamos</a>
+    <a class="nav-link text-dark d-flex align-items-center gap-2" routerLink="/inicioBibliotecario/devoluciones">Devoluciones</a>
+    <a class="nav-link text-dark d-flex align-items-center gap-2" routerLink="/inicioBibliotecario/reportes">Reportes</a>
+    <a class="nav-link text-dark d-flex align-items-center gap-2" routerLink="/inicioBibliotecario/catalogo">Regresar al inicio</a>
+    <a class="nav-link text-dark d-flex align-items-center gap-2 text-danger mt-auto" routerLink="/iniciar-sesion" (click)="cerrarSesion()">Cerrar sesión</a>
     </div>
 </div>

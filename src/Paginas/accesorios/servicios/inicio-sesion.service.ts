@@ -42,10 +42,16 @@ export class InicioSesionService {
         !('usuario' in sesion) ||
         !('rolUsuario' in sesion) ||
         !('anioLectivo' in sesion) ||
+        !('accessToken' in sesion) ||
+        !('expiresAt' in sesion) ||
         typeof sesion.idUsuario !== 'number' ||
         typeof sesion.usuario !== 'string' ||
         typeof sesion.rolUsuario !== 'string' ||
-        typeof sesion.anioLectivo !== 'number'
+        typeof sesion.anioLectivo !== 'number' ||
+        typeof sesion.accessToken !== 'string' ||
+        !sesion.accessToken ||
+        typeof sesion.expiresAt !== 'number' ||
+        sesion.expiresAt <= Math.floor(Date.now() / 1000)
       ) {
         this.cerrarSesion();
         return null;
@@ -67,20 +73,22 @@ export class InicioSesionService {
     switch (this.normalizarRol(rolUsuario)) {
       case 'SUPERADMIN':
         return '/inicioSuperAdmin';
+      case 'ADMIN':
+        return '/inicioAdmin';
       case 'BIBLIOTECARIO':
         return '/inicioBibliotecario';
       case 'SECRETARIO':
         return '/inicioSecretaria';
+      case 'MAESTRO':
+        return '/inicioMaestro';
+      case 'ESTUDIANTE':
+        return '/inicioEstudiante';
       default:
         return null;
     }
   }
 
   private normalizarRol(rolUsuario: string): string {
-    return rolUsuario
-      .normalize('NFD')
-      .replace(/\p{Diacritic}/gu, '')
-      .replace(/[^a-zA-Z]/g, '')
-      .toUpperCase();
+    return rolUsuario.normalize('NFD').replace(/\p{Diacritic}/gu, '').replace(/[^a-zA-Z]/g, '').toUpperCase();
   }
 }

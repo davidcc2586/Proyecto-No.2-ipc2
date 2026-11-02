@@ -6,7 +6,6 @@
 
   <form #formulario="ngForm" (ngSubmit)="recuperarContrasena(formulario)">
     
-    <!-- Usuario -->
     <div class="mb-3">
       <label for="usuarioRecu" class="form-label small fw-semibold">Usuario</label>
       <input
@@ -20,7 +19,6 @@
       />
     </div>
 
-    <!-- Fecha de Nacimiento -->
     <div class="mb-3">
       <label for="fechaNacimiento" class="form-label small fw-semibold">Fecha de Nacimiento</label>
       <input
@@ -33,7 +31,6 @@
       />
     </div>
 
-    <!-- CUI -->
     <div class="mb-3">
       <label for="cui" class="form-label small fw-semibold">CUI</label>
       <input
@@ -47,18 +44,18 @@
       />
     </div>
 
-    <!-- Botón -->
     <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold mt-2" [disabled]="cargando || formulario.invalid">
       {{ cargando ? 'Consultando...' : 'Recuperar clave' }}
     </button>
   </form>
 
   @if (estado) {
-    <div class="alert mt-3 py-2 small text-center" [class.alert-danger]="error" [class.alert-info]="!error" [attr.role]="error ? 'alert' : 'status'">
+    <div class="alert alert-dismissible mt-3 py-2 small text-center" [class.alert-danger]="error" [class.alert-info]="!error" [attr.role]="error ? 'alert' : 'status'">
       {{ estado }}
       @if (claveRecuperada) {
         <div class="fw-bold mt-2">Clave: {{ claveRecuperada }}</div>
       }
+      <button type="button" class="btn-close" aria-label="Cerrar mensaje" (click)="estado = ''; claveRecuperada = ''"></button>
     </div>
   }
 </div>

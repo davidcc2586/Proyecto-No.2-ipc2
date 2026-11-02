@@ -32,7 +32,7 @@
             <h2 class="h5 fw-bold mb-1">Cuentas registradas</h2>
             <small class="text-muted">Consulta usuarios por rol y selecciona una cuenta para ver sus datos.</small>
           </div>
-          <span class="badge bg-primary-subtle text-primary fs-6">{{ usuarios.length }} usuarios</span>
+          <span class="badge bg-primary-subtle text-primary fs-6">{{ totalUsuarios }} usuarios</span>
         </div>
 
         <div class="row g-3 mb-3">
@@ -51,6 +51,13 @@
           </div>
         </div>
 
+        <app-paginacion-lista
+          [pagina]="pagina"
+          [totalPaginas]="totalPaginas"
+          [totalElementos]="totalUsuarios"
+          [cargando]="cargandoUsuarios"
+          (paginaCambiada)="cambiarPagina($event)" />
+
         <div class="table-responsive">
           <table class="table table-hover align-middle mb-0">
             <thead class="table-light">
@@ -62,16 +69,9 @@
               </tr>
             </thead>
             <tbody>
-              @if (cargandoUsuarios) {
+              @if (!cargandoUsuarios && usuariosFiltrados.length === 0) {
                 <tr>
-                  <td colspan="3" class="text-center text-muted py-4">
-                    <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
-                    Cargando usuarios...
-                  </td>
-                </tr>
-              } @else if (usuariosFiltrados.length === 0) {
-                <tr>
-                  <td colspan="3" class="text-center text-muted py-4">
+                  <td colspan="4" class="text-center text-muted py-4">
                     No se encontraron usuarios para este rol.
                   </td>
                 </tr>
@@ -113,12 +113,6 @@
 
     <section class="col-12 col-xl-5">
       <div class="card border-0 shadow-sm p-3 p-md-4">
-        @if (cargandoDetalle) {
-          <div class="text-center text-muted py-5">
-            <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
-            Consultando datos...
-          </div>
-        } @else {
           <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
             <div>
               <h2 class="h5 fw-bold mb-1">
@@ -261,17 +255,12 @@
                   <button class="btn btn-outline-secondary" type="button" (click)="cancelarEdicion()">Cancelar</button>
                 }
                 <button class="btn btn-primary" type="submit" [disabled]="guardando">
-                  @if (guardando) {
-                    <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
-                  } @else {
-                    <i class="bi bi-check-lg me-2"></i>
-                  }
+                  <i class="bi bi-check-lg me-2"></i>
                   {{ modo === 'crear' ? 'Crear usuario' : 'Guardar cambios' }}
                 </button>
               </div>
             }
           </form>
-        }
       </div>
     </section>
   </div>

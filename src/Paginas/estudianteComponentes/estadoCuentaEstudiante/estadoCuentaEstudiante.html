@@ -1,0 +1,57 @@
+<section class="container-fluid bg-light py-4">
+  <div class="mb-4">
+    <span class="text-muted small fw-bold">ESTUDIANTE</span>
+    <h1 class="h3 fw-bold mb-1">Estado de cuenta</h1>
+    <p class="text-muted mb-0">Consulta los pagos registrados y las colegiaturas pendientes del ciclo activo.</p>
+  </div>
+
+  @if (error) { <div class="alert alert-danger alert-dismissible" role="alert">{{ error }}<button type="button" class="btn-close" aria-label="Cerrar mensaje" (click)="error = ''"></button></div> }
+  @if (!cargando && estadoCuenta) {
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <section class="card border-0 shadow-sm p-3 h-100">
+          <span class="small text-muted">Ciclo activo</span>
+          <strong class="fs-4">{{ estadoCuenta.anioLectivo || 'Sin ciclo activo' }}</strong>
+        </section>
+      </div>
+      <div class="col-md-4">
+        <section class="card border-0 shadow-sm p-3 h-100">
+          <span class="small text-muted">Total de pagos registrados</span>
+          <strong class="fs-4">Q {{ totalPagado | number:'1.2-2' }}</strong>
+        </section>
+      </div>
+      <div class="col-md-4">
+        <section class="card border-0 shadow-sm p-3 h-100">
+          <span class="small text-muted">Colegiaturas pendientes</span>
+          <strong class="fs-4">{{ estadoCuenta.mesesPendientes.length }}</strong>
+        </section>
+      </div>
+    </div>
+
+
+    <section class="card border-0 shadow-sm p-3 p-md-4">
+      <h2 class="h5 fw-bold mb-3">Pagos realizados</h2>
+      @if (estadoCuenta.pagos.length === 0) {
+        <p class="text-center text-muted py-3 mb-0">No hay pagos registrados.</p>
+      } @else {
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr><th>Fecha</th><th>Tipo</th><th>Descripción</th><th class="text-end">Cantidad</th></tr>
+            </thead>
+            <tbody>
+              @for (pago of estadoCuenta.pagos; track pago.idPago) {
+                <tr>
+                  <td>{{ formatoFecha(pago.fecha) }}</td>
+                  <td>{{ pago.tipoPago }}</td>
+                  <td>{{ pago.descripcion }}</td>
+                  <td class="text-end">Q {{ pago.cantidad | number:'1.2-2' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+  }
+</section>

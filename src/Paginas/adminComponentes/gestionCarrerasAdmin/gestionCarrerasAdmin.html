@@ -1,0 +1,52 @@
+<section class="container-fluid bg-light py-3">
+  <h1 class="h3 fw-bold">Carreras de diversificado</h1>
+  @if (mensaje) { <div class="alert alert-success alert-dismissible" role="status">{{ mensaje }}<button type="button" class="btn-close" aria-label="Cerrar mensaje" (click)="mensaje = ''"></button></div> }
+  @if (error) { <div class="alert alert-danger alert-dismissible" role="alert">{{ error }}<button type="button" class="btn-close" aria-label="Cerrar mensaje" (click)="error = ''"></button></div> }
+
+  <div class="card border-0 shadow-sm p-3 mb-4">
+    <h2 class="h5">{{ carreraSeleccionada ? 'Modificar carrera' : 'Registrar carrera' }}</h2>
+    <form #formulario="ngForm" (ngSubmit)="guardarCarrera(formulario)" class="row g-3 align-items-end">
+      <div class="col-md-6">
+        <label class="form-label" for="nombreCarrera">Nombre de la carrera</label>
+        <input id="nombreCarrera" class="form-control" name="nombreCarrera" [(ngModel)]="nombreCarrera" required>
+      </div>
+      <div class="col-auto">
+        <button class="btn btn-primary" type="submit" [disabled]="guardando || formulario.invalid">
+          {{ carreraSeleccionada ? 'Guardar cambios' : 'Registrar' }}
+        </button>
+      </div>
+      @if (carreraSeleccionada) {
+        <div class="col-auto"><button class="btn btn-outline-secondary" type="button" (click)="cancelarEdicion()">Cancelar</button></div>
+      }
+    </form>
+  </div>
+
+  <div class="card border-0 shadow-sm p-3">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light"><tr><th>ID</th><th>Carrera</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <tbody>
+          @if (!cargando && carreras.length === 0) {
+            <tr><td colspan="4" class="text-center text-muted">No hay carreras para mostrar.</td></tr>
+          } @else if (carreras.length > 0) {
+            @for (carrera of carreras; track carrera.idCarrera) {
+              <tr>
+                <td>{{ carrera.idCarrera }}</td><td>{{ carrera.nombreCarrera }}</td><td>{{ carrera.estadoCarrera }}</td>
+                <td class="text-nowrap">
+                  <button class="btn btn-sm btn-outline-primary me-2" type="button" (click)="seleccionarCarrera(carrera)">Modificar</button>
+                  <button class="btn btn-sm btn-outline-warning" type="button" (click)="cambiarEstado(carrera)">Activar/Desactivar</button>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+    <app-paginacion-lista
+      [pagina]="pagina"
+      [totalPaginas]="totalPaginas"
+      [totalElementos]="totalCarreras"
+      [cargando]="cargando"
+      (paginaCambiada)="cambiarPagina($event)" />
+  </div>
+</section>

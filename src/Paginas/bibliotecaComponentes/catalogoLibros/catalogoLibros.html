@@ -6,10 +6,10 @@
   </div>
 
   @if (mensaje) {
-    <div class="alert alert-success">{{ mensaje }}</div>
+    <div class="alert alert-success alert-dismissible" role="status">{{ mensaje }}<button type="button" class="btn-close" aria-label="Cerrar mensaje" (click)="mensaje = ''"></button></div>
   }
   @if (error) {
-    <div class="alert alert-danger">{{ error }}</div>
+    <div class="alert alert-danger alert-dismissible" role="alert">{{ error }}<button type="button" class="btn-close" aria-label="Cerrar mensaje" (click)="error = ''"></button></div>
   }
 
   <div class="row g-4 align-items-start">
@@ -21,13 +21,9 @@
             <i class="bi bi-arrow-clockwise me-1"></i>Actualizar
           </button>
         </div>
-        @if (cargando) {
-          <div class="text-center text-muted py-4">
-            <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Cargando catálogo...
-          </div>
-        } @else if (libros.length === 0) {
+        @if (!cargando && libros.length === 0) {
           <p class="text-center text-muted py-4 mb-0">No hay libros registrados.</p>
-        } @else {
+        } @else if (libros.length > 0) {
           <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
               <thead class="table-light">
@@ -69,6 +65,12 @@
             </table>
           </div>
         }
+        <app-paginacion-lista
+          [pagina]="pagina"
+          [totalPaginas]="totalPaginas"
+          [totalElementos]="totalLibros"
+          [cargando]="cargando"
+          (paginaCambiada)="cambiarPagina($event)" />
       </div>
     </section>
 
@@ -90,12 +92,10 @@
               <label class="form-label" for="anioLibro">Año</label>
               <input id="anioLibro" class="form-control" type="number" name="anio" min="1" step="1" [(ngModel)]="formulario.anio" required>
             </div>
-            @if (modo === 'crear') {
-              <div class="col-sm-6">
-                <label class="form-label" for="cantidadLibro">Cantidad</label>
-                <input id="cantidadLibro" class="form-control" type="number" name="cantidad" min="1" step="1" [(ngModel)]="formulario.cantidad" required>
-              </div>
-            }
+            <div class="col-sm-6">
+              <label class="form-label" for="cantidadLibro">Existencias</label>
+              <input id="cantidadLibro" class="form-control" type="number" name="cantidad" min="0" step="1" [(ngModel)]="formulario.cantidad" required>
+            </div>
             <div class="col-12">
               <label class="form-label" for="editorialLibro">Editorial</label>
               <input id="editorialLibro" class="form-control" name="editorial" [(ngModel)]="formulario.editorial" required>
@@ -106,11 +106,7 @@
               <button class="btn btn-outline-secondary" type="button" (click)="cancelarEdicion()">Cancelar</button>
             }
             <button class="btn btn-primary" type="submit" [disabled]="guardando">
-              @if (guardando) {
-                <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Guardando...
-              } @else {
-                {{ modo === 'crear' ? 'Registrar libro' : 'Guardar cambios' }}
-              }
+              {{ modo === 'crear' ? 'Registrar libro' : 'Guardar cambios' }}
             </button>
           </div>
         </form>

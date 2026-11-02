@@ -2,14 +2,11 @@
 
     <app-cabecera rol="Bibliotecario" />
 
-    <!-- 2. Contenedor principal que divide el Sidebar y el Contenido en columnas -->
     <div class="container-fluid flex-grow-1 overflow-hidden p-0">
         <div class="row h-100 g-0">
 
-        <!-- 3. Menú Lateral como columna de Bootstrap (ocupa 2 columnas en pantallas grandes) -->
         <app-menuLateralBibliotecario class="col-lg-2 d-none d-lg-flex flex-column bg-white border-end" />
 
-        <!-- 4. Área de contenido central (ocupa el resto del espacio) -->
         <main class="col-lg-10 col-12 overflow-auto p-4">
         <router-outlet />
         </main>

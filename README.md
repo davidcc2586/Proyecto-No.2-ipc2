@@ -57,3 +57,17 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+## Sesión y reportes PDF
+
+Las rutas de los paneles están protegidas con un guard de Angular según el rol. El interceptor agrega el token Bearer a las solicitudes protegidas y cierra la sesión local cuando la API responde `401`. Los tokens vencen después de ocho horas.
+
+El backend firma los tokens con `SESSION_TOKEN_SECRET`. Configura esa variable con un valor secreto aleatorio de al menos 32 bytes en el entorno de Tomcat para conservar la validez de las sesiones al reiniciar el servidor. Si no está configurada, se genera una clave temporal al iniciar la aplicación, por lo que los tokens existentes dejan de ser válidos cuando se reinicia.
+
+Los reportes JasperReports se descargan desde el menú **Reportes**:
+
+- Historial de pagos por estudiante: disponible para ADMIN y SUPERADMIN.
+- Ingresos por concepto: disponible para SUPERADMIN.
+- Morosidad de biblioteca: disponible para BIBLIOTECARIO, ADMIN y SUPERADMIN.
+
+Las fechas de los dos primeros reportes son opcionales; deben enviarse como `yyyy-MM-dd` y la fecha inicial no puede ser posterior a la final.

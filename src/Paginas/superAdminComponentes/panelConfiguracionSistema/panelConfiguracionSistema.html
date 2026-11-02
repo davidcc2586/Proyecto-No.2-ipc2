@@ -56,13 +56,8 @@
         </div>
         <div class="col-sm-6 col-md-auto">
           <button class="btn btn-primary" type="submit" [disabled]="creandoAnio">
-            @if (creandoAnio) {
-              <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
-              Agregando...
-            } @else {
-              <i class="bi bi-plus-lg me-2"></i>
-              Agregar año
-            }
+            <i class="bi bi-plus-lg me-2"></i>
+            Agregar año
           </button>
         </div>
       </div>
@@ -80,16 +75,11 @@
       </span>
     </div>
 
-    @if (cargando) {
-      <div class="text-center text-muted py-5">
-        <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
-        Cargando configuración...
-      </div>
-    } @else if (aniosLectivos.length === 0) {
+    @if (!cargando && aniosLectivos.length === 0) {
       <div class="text-center text-muted py-5">
         No hay años lectivos registrados.
       </div>
-    } @else {
+    } @else if (aniosLectivos.length > 0) {
       <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
           <thead class="table-light">
@@ -125,12 +115,7 @@
                       type="button"
                       [disabled]="guardandoAnio !== null"
                       (click)="cambiarAnioLectivo(configuracion)">
-                      @if (guardandoAnio === configuracion.anioLectivo) {
-                        <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
-                        Actualizando...
-                      } @else {
-                        Establecer como activo
-                      }
+                      Establecer como activo
                     </button>
                   }
                 </td>

@@ -4,7 +4,6 @@
 
     <form #formulario="ngForm" (ngSubmit)="iniciarSesion(formulario)">
     
-    <!-- Campo Usuario -->
     <div class="mb-3">
         <label for="usuario" class="form-label small fw-semibold">Usuario</label>
         <input
@@ -13,12 +12,11 @@
         type="text"
         class="form-control bg-light border-0 py-2"
         placeholder="Ingresa tu usuario"
-          [(ngModel)]="usuario"
-          required
+        [(ngModel)]="usuario"
+        required
         />
     </div>
 
-    <!-- Campo Contraseña con botón mostrar/ocultar -->
     <div class="mb-3">
         <div class="d-flex justify-content-between align-items-center mb-1">
         <label for="clave" class="form-label small fw-semibold mb-0">Contraseña</label>
@@ -46,15 +44,15 @@
         </div>
     </div>
 
-    <!-- Botón de Envío -->
     <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold mt-2" [disabled]="cargando || formulario.invalid">
         {{ cargando ? 'Ingresando...' : 'Iniciar sesión' }}
     </button>
     </form>
 
     @if (mensaje) {
-        <div class="alert mt-3 py-2 small text-center" [class.alert-danger]="error" [class.alert-warning]="!error" [attr.role]="error ? 'alert' : 'status'">
+        <div class="alert alert-dismissible mt-3 py-2 small text-center" [class.alert-danger]="error" [class.alert-warning]="!error" [attr.role]="error ? 'alert' : 'status'">
         {{ mensaje }}
+        <button type="button" class="btn-close" aria-label="Cerrar mensaje" (click)="mensaje = ''"></button>
     </div>
     }
 

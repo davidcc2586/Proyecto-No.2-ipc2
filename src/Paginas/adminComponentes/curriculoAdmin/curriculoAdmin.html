@@ -1,0 +1,74 @@
+<section class="container-fluid bg-light py-3">
+  <h1 class="h3 fw-bold">Currículo y asignación de maestros</h1>
+  @if (mensaje) { <div class="alert alert-success alert-dismissible" role="status">{{ mensaje }}<button type="button" class="btn-close" aria-label="Cerrar mensaje" (click)="mensaje = ''"></button></div> }
+  @if (error) { <div class="alert alert-danger alert-dismissible" role="alert">{{ error }}<button type="button" class="btn-close" aria-label="Cerrar mensaje" (click)="error = ''"></button></div> }
+
+  <div class="card border-0 shadow-sm p-3 mb-4">
+    <h2 class="h5">Cursos asignados al grado</h2>
+    <div class="row g-3 align-items-end">
+      <div class="col-md-5">
+        <label class="form-label" for="gradoCurriculo">Grado</label>
+        <select id="gradoCurriculo" class="form-select" name="idGrado" [(ngModel)]="idGrado" (ngModelChange)="cargarDatosGrado()">
+          <option value="">Selecciona un grado</option>
+          @for (grado of grados; track grado.idGrado) { <option [value]="grado.idGrado">{{ grado.nombreGrado }}</option> }
+        </select>
+      </div>
+      <div class="col-md-5">
+        <label class="form-label" for="cursoCurriculo">Curso</label>
+        <select id="cursoCurriculo" class="form-select" name="idCursoCurriculo" [(ngModel)]="idCurso">
+          <option value="">Selecciona un curso</option>
+          @for (curso of cursos; track curso.idCurso) { <option [value]="curso.idCurso">{{ curso.nombreCurso }}</option> }
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-primary w-100" type="button" [disabled]="!idGrado || !idCurso || guardando"
+          (click)="asignarCurso()">Asignar</button>
+      </div>
+    </div>
+    <div class="mt-3">
+      <strong>Cursos del grado:</strong>
+      @if (cursosAsignados.length === 0) { <span class="text-muted ms-2">Sin cursos asignados</span> }
+      @for (curso of cursosAsignados; track curso.idCurso) { <span class="badge bg-secondary me-2">{{ curso.nombreCurso }}</span> }
+    </div>
+    <app-paginacion-lista
+      [pagina]="paginaCursosAsignados"
+      [totalPaginas]="totalPaginasCursosAsignados"
+      [totalElementos]="totalCursosAsignados"
+      (paginaCambiada)="cambiarPaginaCursosAsignados($event)" />
+  </div>
+
+  <div class="card border-0 shadow-sm p-3">
+    <h2 class="h5">Asignar maestro a curso y sección</h2>
+    <form #formularioMaestro="ngForm" (ngSubmit)="asignarMaestro(formularioMaestro)" class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label" for="gradoMaestro">Grado</label>
+        <select id="gradoMaestro" class="form-select" name="idGradoMaestro" [(ngModel)]="idGrado" (ngModelChange)="cargarDatosGrado()" required>
+          <option value="">Selecciona un grado</option>
+          @for (grado of grados; track grado.idGrado) { <option [value]="grado.idGrado">{{ grado.nombreGrado }}</option> }
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label" for="seccionMaestro">Sección</label>
+        <select id="seccionMaestro" class="form-select" name="idSeccion" [(ngModel)]="idSeccion" required>
+          <option value="">Selecciona una sección</option>
+          @for (seccion of secciones; track seccion.idSeccion) { <option [value]="seccion.idSeccion">{{ seccion.seccion }} · {{ seccion.anio }}</option> }
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label" for="cursoMaestro">Curso</label>
+        <select id="cursoMaestro" class="form-select" name="idCursoMaestro" [(ngModel)]="idCurso" required>
+          <option value="">Selecciona un curso</option>
+          @for (curso of cursos; track curso.idCurso) { <option [value]="curso.idCurso">{{ curso.nombreCurso }}</option> }
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label" for="maestro">Maestro</label>
+        <select id="maestro" class="form-select" name="idMaestro" [(ngModel)]="idMaestro" required>
+          <option value="">Selecciona un maestro</option>
+          @for (maestro of maestros; track maestro.idUsuario) { <option [value]="maestro.idUsuario">{{ maestro.nombreCompleto }}</option> }
+        </select>
+      </div>
+      <div class="col-12"><button class="btn btn-primary" type="submit" [disabled]="guardando || formularioMaestro.invalid">Asignar maestro</button></div>
+    </form>
+  </div>
+</section>

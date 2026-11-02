@@ -1,0 +1,34 @@
+<section class="container-fluid bg-light py-3">
+  <h1 class="h3 fw-bold">Solvencia económica</h1>
+  <p class="text-muted">Consulta tu estado de solvencia para un mes.</p>
+  @if (error) { <div class="alert alert-danger alert-dismissible" role="alert">{{ error }}<button type="button" class="btn-close" aria-label="Cerrar mensaje" (click)="error = ''"></button></div> }
+  <div class="card border-0 shadow-sm p-3">
+    <form #formulario="ngForm" (ngSubmit)="consultar(formulario)" class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label" for="anioSolvencia">Año lectivo</label>
+        <input id="anioSolvencia" class="form-control" type="number" name="anio" [(ngModel)]="anio" required>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label" for="mesSolvencia">Mes</label>
+        <select id="mesSolvencia" class="form-select" name="mes" [(ngModel)]="mes" required>
+          @for (opcion of meses; track opcion.valor) { <option [value]="opcion.valor">{{ opcion.nombre }}</option> }
+        </select>
+      </div>
+      <div class="col-md-4">
+        <button class="btn btn-primary" type="submit" [disabled]="cargando || formulario.invalid">
+          {{ cargando ? 'Consultando...' : 'Consultar' }}
+        </button>
+      </div>
+    </form>
+    @if (solvencia) {
+      <div class="border rounded p-3 mt-4">
+        <h2 class="h5">{{ solvencia.titulo || 'Resultado de solvencia' }}</h2>
+        @if (solvencia.encabezado) { <p>{{ solvencia.encabezado }}</p> }
+        <p><strong>Estudiante:</strong> {{ solvencia.nombreEstudiante }}</p>
+        <p><strong>Grado y sección:</strong> {{ solvencia.gradoSeccion }}</p>
+        <p><strong>Año:</strong> {{ solvencia.anioLectivo }}</p>
+        <p><strong>Estado:</strong> {{ solvencia.estadoSolvencia }}</p>
+      </div>
+    }
+  </div>
+</section>

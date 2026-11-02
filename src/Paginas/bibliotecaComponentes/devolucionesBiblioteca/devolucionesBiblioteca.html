@@ -6,10 +6,10 @@
   </div>
 
   @if (mensaje) {
-    <div class="alert alert-success">{{ mensaje }}</div>
+    <div class="alert alert-success alert-dismissible" role="status">{{ mensaje }}<button type="button" class="btn-close" aria-label="Cerrar mensaje" (click)="mensaje = ''"></button></div>
   }
   @if (error) {
-    <div class="alert alert-danger">{{ error }}</div>
+    <div class="alert alert-danger alert-dismissible" role="alert">{{ error }}<button type="button" class="btn-close" aria-label="Cerrar mensaje" (click)="error = ''"></button></div>
   }
 
   <section class="card border-0 shadow-sm p-3 p-md-4">
@@ -24,15 +24,13 @@
     </div>
 
     <div class="form-check form-switch mb-3">
-      <input class="form-check-input" type="checkbox" id="soloMorosos" name="filtroMoroso" [(ngModel)]="filtroMoroso" (ngModelChange)="cargarPrestamos()">
+      <input class="form-check-input" type="checkbox" id="soloMorosos" name="filtroMoroso" [(ngModel)]="filtroMoroso" (ngModelChange)="cambiarFiltroMoroso()">
       <label class="form-check-label" for="soloMorosos">Mostrar solo préstamos morosos</label>
     </div>
 
-    @if (cargando) {
-      <p class="text-center text-muted py-4 mb-0">Cargando préstamos...</p>
-    } @else if (prestamos.length === 0) {
+    @if (!cargando && prestamos.length === 0) {
       <p class="text-center text-muted py-4 mb-0">No hay préstamos pendientes para este filtro.</p>
-    } @else {
+    } @else if (prestamos.length > 0) {
       <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
           <thead class="table-light">
@@ -65,6 +63,12 @@
         </table>
       </div>
     }
+    <app-paginacion-lista
+      [pagina]="pagina"
+      [totalPaginas]="totalPaginas"
+      [totalElementos]="totalPrestamos"
+      [cargando]="cargando"
+      (paginaCambiada)="cambiarPagina($event)" />
 
     @if (prestamoSeleccionado) {
       <form #devolucionForm="ngForm" (ngSubmit)="registrarDevolucion(devolucionForm)" novalidate class="border-top mt-4 pt-4">
@@ -81,11 +85,7 @@
           <div class="col-sm-6 col-md-auto d-flex gap-2">
             <button class="btn btn-outline-secondary" type="button" (click)="prestamoSeleccionado = null">Cancelar</button>
             <button class="btn btn-primary" type="submit" [disabled]="guardando">
-              @if (guardando) {
-                <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Guardando...
-              } @else {
-                <i class="bi bi-check-lg me-2"></i>Confirmar devolución
-              }
+              <i class="bi bi-check-lg me-2"></i>Confirmar devolución
             </button>
           </div>
         </div>

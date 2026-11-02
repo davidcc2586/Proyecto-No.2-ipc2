@@ -7,10 +7,11 @@ import { LibroSelectResponse } from '../../../Objetos/objetosResponse/LibroSelec
 import { PrestamoLibroResponse } from '../../../Objetos/objetosResponse/PrestamoLibroResponse';
 import { BibliotecaService } from '../../accesorios/servicios/biblioteca.service';
 import { EstudianteService } from '../../accesorios/servicios/estudiante.service';
+import { PaginacionLista } from '../../accesorios/paginacionLista/paginacionLista';
 
 @Component({
   selector: 'app-prestamos-biblioteca',
-  imports: [FormsModule],
+  imports: [FormsModule, PaginacionLista],
   templateUrl: './prestamosBiblioteca.html',
 })
 export class PrestamosBiblioteca implements OnInit {
@@ -28,6 +29,9 @@ export class PrestamosBiblioteca implements OnInit {
   guardando = false;
   mensaje = '';
   error = '';
+  pagina = 0;
+  totalPaginas = 0;
+  totalPrestamos = 0;
 
   constructor(
     private readonly bibliotecaService: BibliotecaService,
@@ -72,9 +76,11 @@ export class PrestamosBiblioteca implements OnInit {
 
   cargarPrestamos(): void {
     this.cargando = true;
-    this.bibliotecaService.obtenerPrestamos('PRESTADO', this.filtroMoroso).subscribe({
-      next: (prestamos) => {
-        this.prestamos = prestamos;
+    this.bibliotecaService.obtenerPrestamosPaginados('PRESTADO', this.filtroMoroso, this.pagina).subscribe({
+      next: (respuesta) => {
+        this.prestamos = respuesta.contenido;
+        this.totalPaginas = respuesta.totalPaginas;
+        this.totalPrestamos = respuesta.totalElementos;
         this.cargando = false;
         this.changeDetector.markForCheck();
       },
@@ -84,6 +90,16 @@ export class PrestamosBiblioteca implements OnInit {
         this.changeDetector.markForCheck();
       },
     });
+  }
+
+  cambiarPagina(pagina: number): void {
+    this.pagina = pagina;
+    this.cargarPrestamos();
+  }
+
+  cambiarFiltroMoroso(): void {
+    this.pagina = 0;
+    this.cargarPrestamos();
   }
 
   registrarPrestamo(formulario: NgForm): void {
@@ -113,6 +129,7 @@ export class PrestamosBiblioteca implements OnInit {
         this.costoDia = '';
         this.fechaPrestamo = this.fechaHoy();
         this.fechaEstimadaDevolucion = '';
+        this.pagina = 0;
         this.cargarPrestamos();
         this.changeDetector.markForCheck();
       },

@@ -1,0 +1,83 @@
+<section class="container-fluid py-3">
+  <h1 class="h3 fw-bold">Reportes PDF</h1>
+  <p class="text-muted">Genera reportes operativos y gerenciales según los permisos de tu cuenta.</p>
+
+  @if (mensaje) {
+    <div class="alert alert-success alert-dismissible" role="status">{{ mensaje }}<button type="button" class="btn-close" aria-label="Cerrar mensaje" (click)="mensaje = ''"></button></div>
+  }
+  @if (error) {
+    <div class="alert alert-danger alert-dismissible" role="alert">{{ error }}<button type="button" class="btn-close" aria-label="Cerrar mensaje" (click)="error = ''"></button></div>
+  }
+
+  @if (puedeVerPagos || puedeVerIngresos) {
+    <div class="card border-0 shadow-sm p-3 mb-4">
+      <h2 class="h5 fw-bold">Filtros por fecha</h2>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label for="fechaInicioReporte" class="form-label">Desde</label>
+          <input id="fechaInicioReporte" name="fechaInicioReporte" type="date" class="form-control"
+            [(ngModel)]="fechaInicio">
+        </div>
+        <div class="col-md-4">
+          <label for="fechaFinReporte" class="form-label">Hasta</label>
+          <input id="fechaFinReporte" name="fechaFinReporte" type="date" class="form-control"
+            [(ngModel)]="fechaFin">
+        </div>
+        <div class="col-12">
+          <span class="form-text">Deja las fechas vacías para consultar todo el histórico.</span>
+        </div>
+      </div>
+    </div>
+  }
+
+  <div class="row g-3">
+    @if (puedeVerPagos) {
+      <div class="col-12 col-xl-6">
+        <div class="card h-100 border-0 shadow-sm p-3">
+          <h2 class="h5 fw-bold">Historial de pagos por estudiante</h2>
+          <p class="text-muted">Incluye el detalle de pagos, facturas, total pagado y meses pendientes del ciclo activo.</p>
+          <label for="estudianteReporte" class="form-label">Estudiante</label>
+          <select id="estudianteReporte" name="estudianteReporte" class="form-select mb-3"
+            [(ngModel)]="idEstudiante">
+            <option value="">Selecciona un estudiante</option>
+            @for (estudiante of estudiantes; track estudiante.idEstudiante) {
+              <option [value]="estudiante.idEstudiante">
+                {{ estudiante.nombreCompleto }}
+              </option>
+            }
+          </select>
+          <button type="button" class="btn btn-primary align-self-start"
+            [disabled]="generando || !idEstudiante" (click)="generarHistorial()">
+            Descargar historial PDF
+          </button>
+        </div>
+      </div>
+    }
+
+    @if (puedeVerIngresos) {
+      <div class="col-12 col-xl-6">
+        <div class="card h-100 border-0 shadow-sm p-3">
+          <h2 class="h5 fw-bold">Ingresos por concepto</h2>
+          <p class="text-muted">Resume la cantidad de pagos y el total recaudado para cada concepto en el período.</p>
+          <button type="button" class="btn btn-primary align-self-start mt-auto"
+            [disabled]="generando" (click)="generarIngresos()">
+            Descargar ingresos PDF
+          </button>
+        </div>
+      </div>
+    }
+
+    @if (puedeVerMorosidad) {
+      <div class="col-12 col-xl-6">
+        <div class="card h-100 border-0 shadow-sm p-3">
+          <h2 class="h5 fw-bold">Morosidad de biblioteca</h2>
+          <p class="text-muted">Muestra préstamos vencidos pendientes, días de retraso y recargos acumulados.</p>
+          <button type="button" class="btn btn-primary align-self-start mt-auto"
+            [disabled]="generando" (click)="generarMorosidad()">
+            Descargar morosidad PDF
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</section>

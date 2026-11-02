@@ -6,6 +6,7 @@ import { GradoActualizarRequest } from '../../../Objetos/objetosRequest/GradoAct
 import { Grado } from '../../../Objetos/objetosResponse/Grado';
 import { SelectGradosResponse } from '../../../Objetos/objetosResponse/SelectGradosResponse';
 import { RestConstants } from './rest-constants';
+import { PaginaResponse } from '../../../Objetos/objetosResponse/PaginaResponse';
 
 @Injectable({ providedIn: 'root' })
 export class GradoService {
@@ -15,6 +16,12 @@ export class GradoService {
 
   obtenerGrados(): Observable<Grado[]> {
     return this.http.get<Grado[]>(`${this.baseUrl}/catalogo`);
+  }
+
+  obtenerGradosPaginados(pagina: number, tamano = 10): Observable<PaginaResponse<Grado>> {
+    return this.http.get<PaginaResponse<Grado>>(`${this.baseUrl}/catalogoPaginado`, {
+      params: { pagina, tamano },
+    });
   }
 
   obtenerGradosSelect(): Observable<SelectGradosResponse[]> {

@@ -6,6 +6,8 @@ import { UsuarioRequest } from '../../../Objetos/objetosRequest/UsuarioRequest';
 import { Usuario } from '../../../Objetos/objetosResponse/Usuario';
 import { RolUsuario } from '../../../Objetos/enums/RolUsuario';
 import { UsuarioService } from '../../accesorios/servicios/usuario.service';
+import { InicioSesionService } from '../../accesorios/servicios/inicio-sesion.service';
+import { PaginacionLista } from '../../accesorios/paginacionLista/paginacionLista';
 
 type ModoFormulario = 'crear' | 'ver' | 'editar';
 
@@ -24,18 +26,17 @@ interface DatosUsuarioFormulario {
 
 @Component({
   selector: 'app-panelControlUsuariosAdmin',
-  imports: [FormsModule],
+  imports: [FormsModule, PaginacionLista],
   templateUrl: './panelControlUsuariosAdmin.html',
 })
 export class PanelControlUsuariosAdmin implements OnInit {
-  readonly roles = [
+  private readonly todosLosRoles = [
     { key: 'SUPERADMIN', label: RolUsuario.SUPERADMIN },
     { key: 'ADMIN', label: RolUsuario.ADMIN },
     { key: 'SECRETARIO', label: RolUsuario.SECRETARIO },
     { key: 'BIBLIOTECARIO', label: RolUsuario.BIBLIOTECARIO },
     { key: 'PERSONAL', label: RolUsuario.PERSONAL },
     { key: 'MAESTRO', label: RolUsuario.MAESTRO },
-    { key: 'ESTUDIANTE', label: RolUsuario.ESTUDIANTE },
   ];
 
   usuarios: Usuario[] = [];
@@ -48,6 +49,10 @@ export class PanelControlUsuariosAdmin implements OnInit {
   guardando = false;
   mensaje = '';
   error = '';
+  pagina = 0;
+  tamanoPagina = 7;
+  totalPaginas = 0;
+  totalUsuarios = 0;
 
   formulario: DatosUsuarioFormulario = this.formularioVacio();
 
@@ -55,6 +60,10 @@ export class PanelControlUsuariosAdmin implements OnInit {
     private readonly usuarioService: UsuarioService,
     private readonly changeDetector: ChangeDetectorRef,
   ){}
+
+  get roles(): { key: string; label: RolUsuario }[] {
+    return this.todosLosRoles;
+  }
 
   ngOnInit(): void {
     this.cargarUsuarios();
@@ -77,24 +86,32 @@ export class PanelControlUsuariosAdmin implements OnInit {
     this.cargandoUsuarios = true;
     this.error = '';
 
-    this.usuarioService.obtenerUsuariosPorRol(this.selectedRole).subscribe({
-      next: (usuarios) => {
-        this.usuarios = usuarios;
+    this.usuarioService.obtenerUsuariosPorRolPaginados(this.selectedRole, this.pagina, this.tamanoPagina).subscribe({
+      next: (respuesta) => {
+        this.usuarios = respuesta.contenido;
+        this.totalPaginas = respuesta.totalPaginas;
+        this.totalUsuarios = respuesta.totalElementos;
         this.cargandoUsuarios = false;
-        this.changeDetector.markForCheck();
+        this.changeDetector.detectChanges();
       },
       error: (error: HttpErrorResponse) => {
         this.cargandoUsuarios = false;
         this.error = this.mensajeError(error, 'No se pudieron cargar los usuarios.');
-        this.changeDetector.markForCheck();
+        this.changeDetector.detectChanges();
       },
     });
   }
 
   cambiarRol(): void {
+    this.pagina = 0;
     this.usuarioSeleccionado = null;
     this.modo = 'crear';
     this.formulario = this.formularioVacio();
+    this.cargarUsuarios();
+  }
+
+  cambiarPagina(pagina: number): void {
+    this.pagina = pagina;
     this.cargarUsuarios();
   }
 
@@ -117,12 +134,12 @@ export class PanelControlUsuariosAdmin implements OnInit {
         this.formulario = this.formularioDesdeUsuario(detalle);
         this.selectedRole = this.obtenerClaveRol(detalle.rolUsuario);
         this.cargandoDetalle = false;
-        this.changeDetector.markForCheck();
+        this.changeDetector.detectChanges();
       },
       error: (error: HttpErrorResponse) => {
         this.cargandoDetalle = false;
         this.error = this.mensajeError(error, 'No se pudieron consultar los datos del usuario.');
-        this.changeDetector.markForCheck();
+        this.changeDetector.detectChanges();
       },
     });
   }
@@ -146,7 +163,7 @@ export class PanelControlUsuariosAdmin implements OnInit {
     if (formulario.invalid) {
       formulario.control.markAllAsTouched();
       this.error = 'Completa todos los campos obligatorios antes de guardar.';
-      this.changeDetector.markForCheck();
+      this.changeDetector.detectChanges();
       return;
     }
 
@@ -171,14 +188,15 @@ export class PanelControlUsuariosAdmin implements OnInit {
           this.guardando = false;
           this.mensaje = 'La cuenta se creó correctamente.';
           this.selectedRole = request.rolUsuario;
+          this.pagina = 0;
           this.formulario = this.formularioVacio();
           this.cargarUsuarios();
-          this.changeDetector.markForCheck();
+          this.changeDetector.detectChanges();
         },
         error: (error: HttpErrorResponse) => {
           this.guardando = false;
           this.error = this.mensajeError(error, 'No se pudo crear la cuenta.');
-          this.changeDetector.markForCheck();
+          this.changeDetector.detectChanges();
         },
       });
       return;
@@ -203,14 +221,15 @@ export class PanelControlUsuariosAdmin implements OnInit {
       next: () => {
         this.guardando = false;
         this.mensaje = 'Los cambios del usuario se guardaron correctamente.';
+        this.pagina = 0;
         this.verUsuario(this.usuarioSeleccionado!);
         this.cargarUsuarios();
-        this.changeDetector.markForCheck();
+        this.changeDetector.detectChanges();
       },
       error: (error: HttpErrorResponse) => {
         this.guardando = false;
         this.error = this.mensajeError(error, 'No se pudieron guardar los cambios.');
-        this.changeDetector.markForCheck();
+        this.changeDetector.detectChanges();
       },
     });
   }
@@ -228,15 +247,16 @@ export class PanelControlUsuariosAdmin implements OnInit {
     this.usuarioService.cambiarEstado(usuario.idUsuario).subscribe({
       next: (respuesta) => {
         this.mensaje = respuesta.mensaje || 'El estado de la cuenta se actualizó correctamente.';
+        this.pagina = 0;
         this.cargarUsuarios();
         if (this.usuarioSeleccionado?.idUsuario === usuario.idUsuario) {
           this.verUsuario(usuario);
         }
-        this.changeDetector.markForCheck();
+        this.changeDetector.detectChanges();
       },
       error: (error: HttpErrorResponse) => {
         this.error = this.mensajeError(error, 'No se pudo cambiar el estado de la cuenta.');
-        this.changeDetector.markForCheck();
+        this.changeDetector.detectChanges();
       },
     });
   }
