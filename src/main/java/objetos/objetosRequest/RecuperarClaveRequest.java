@@ -5,6 +5,9 @@ public class RecuperarClaveRequest {
     private String fechaNacimiento;
     private String cui;
 
+    public RecuperarClaveRequest(){
+
+    }
     public RecuperarClaveRequest(String usuario, String fechaNacimiento, String cui) {
         this.usuario = usuario;
         this.fechaNacimiento = fechaNacimiento;

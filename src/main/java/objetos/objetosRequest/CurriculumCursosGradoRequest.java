@@ -4,6 +4,10 @@ public class CurriculumCursosGradoRequest {
     private String idGrado;
     private String idCurso;
 
+    public CurriculumCursosGradoRequest(){
+
+    }
+
     public CurriculumCursosGradoRequest(String idGrado, String idCurso) {
         this.idGrado = idGrado;
         this.idCurso = idCurso;

@@ -13,6 +13,10 @@ public class Pago {
     private String descripcion;
     private LocalDate fecha;
 
+    public Pago(){
+
+    }
+
     public Pago(int idPago, int idEstudiante, int idSecretario, TipoPago tipoPago, double cantidad, String descripcion, LocalDate fecha) {
         this.idPago = idPago;
         this.idEstudiante = idEstudiante;

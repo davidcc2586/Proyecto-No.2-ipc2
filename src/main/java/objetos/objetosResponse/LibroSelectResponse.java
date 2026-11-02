@@ -4,6 +4,9 @@ public class LibroSelectResponse {
     public int idLibro;
     public String titulo;
 
+    public LibroSelectResponse(){
+
+    }
     public LibroSelectResponse(int idLibro, String titulo){
         this.idLibro = idLibro;
         this.titulo = titulo;

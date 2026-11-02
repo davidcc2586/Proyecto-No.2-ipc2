@@ -8,6 +8,10 @@ public class Grado {
     private GradoColegio gradoColegio;
     private int idCarrera;
 
+    public Grado(){
+
+    }
+
     public Grado(int idGrado, GradoColegio gradoColegio) {
         this.idGrado = idGrado;
         this.gradoColegio = gradoColegio;

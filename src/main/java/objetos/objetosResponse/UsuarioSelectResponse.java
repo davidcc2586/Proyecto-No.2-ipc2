@@ -4,6 +4,9 @@ public class UsuarioSelectResponse {
     private int idUsuario;
     private String nombreCompleto;
 
+    public UsuarioSelectResponse(){
+
+    }
     public UsuarioSelectResponse(int idUsuario, String nombreCompleto) {
         this.idUsuario = idUsuario;
         this.nombreCompleto = nombreCompleto;

@@ -11,6 +11,10 @@ public class Libro {
     private String editorial;
     private int cantidad;
 
+    public Libro(){
+
+    }
+
     public Libro(int idLibro, Estado estado, String autor, int anio, String titulo, String editorial, int cantidad) {
         this.idLibro = idLibro;
         this.estado = estado;

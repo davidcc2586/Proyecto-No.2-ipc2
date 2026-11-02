@@ -17,6 +17,9 @@ public class PrestamoLibro {
     private LocalDate fechaDevolucion;
     private double multa;
 
+    public PrestamoLibro(){
+
+    }
     public PrestamoLibro(int idPrestamoLibro, int idLibro, int idEstudiante, EstadoPrestamoLibro estadoPrestamoLibro, EstadoFinalPrestamoLibro estadoFinalPrestamoLibro, double costoDia, LocalDate fechaPrestamo, LocalDate fechaEstimadaDevolucion, LocalDate fechaDevolucion, Double multa) {
         this.idPrestamoLibro = idPrestamoLibro;
         this.idLibro = idLibro;

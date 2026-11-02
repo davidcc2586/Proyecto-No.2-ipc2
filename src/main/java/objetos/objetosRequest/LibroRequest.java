@@ -6,6 +6,9 @@ public class LibroRequest {
     private String titulo;
     private String editorial;
     private String cantidad;
+    public LibroRequest(){
+
+    }
 
     public LibroRequest(String autor, String anio, String titulo, String editorial, String cantidad) {
         this.autor = autor;

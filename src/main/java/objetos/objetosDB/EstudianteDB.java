@@ -1,7 +1,11 @@
 package objetos.objetosDB;
 
 import objetos.enums.EstadoEstudiante;
+import objetos.exceptions.ValidacionException;
+import objetos.objetosRequest.EstudianteActualizarRequest;
 import objetos.objetosResponse.Estudiante;
+import objetos.objetosResponse.EstudianteDatosResponse;
+import objetos.objetosResponse.PaginaResponse;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,6 +18,10 @@ import java.util.Optional;
 
 public class EstudianteDB {
 
+    public EstudianteDatosResponse datosEstudiante(int idEstudiante) throws SQLException{
+        Estudiante estudiante = obtenerEstudiante(idEstudiante).get();
+        return new EstudianteDatosResponse(estudiante.getCui(), estudiante.getNombre(), estudiante.getApellido(),estudiante.getFechaNacimiento(), estudiante.getTipoSangre(), estudiante.getAlergia(), estudiante.getNombreEncargado(), estudiante.getTelefonoEncargado(), estudiante.getCorreoEncargado(), estudiante.getAnioInscripcion(),estudiante.getEstadoEstudiante());
+    }
     public List<Estudiante> estudiantesSeccion(int idSeccion) throws SQLException{
         List<Estudiante> estudiantes = new ArrayList<>();
         String sql = "SELECT * FROM Estudiante e JOIN AsignacionEstudiantes ae ON e.idEstudiante = ae.idEstudiante WHERE ae.idSeccion = ?";
@@ -26,6 +34,66 @@ public class EstudianteDB {
             }
         }
         return estudiantes;
+    }
+
+    public PaginaResponse<Estudiante> estudiantesSeccionPaginados(int idSeccion, int pagina, int tamano) throws SQLException {
+        int offset = new objetos.Paginacion().calcularDesplazamiento(pagina, tamano);
+        List<Estudiante> estudiantes = new ArrayList<>();
+        int totalElementos = 0;
+        String sqlConteo = "SELECT COUNT(*) FROM Estudiante estudiante JOIN AsignacionEstudiantes aisgnacion ON estudiante.idEstudiante = aisgnacion.idEstudiante WHERE aisgnacion.idSeccion = ?";
+        String sql = "SELECT * FROM Estudiante estudiante JOIN AsignacionEstudiantes aisgnacion ON estudiante.idEstudiante = aisgnacion.idEstudiante WHERE aisgnacion.idSeccion = ? ORDER BY estudiante.idEstudiante LIMIT ? OFFSET ?";
+
+        try (Connection connection = ConnectionDB.getConexion();
+             PreparedStatement conteo = connection.prepareStatement(sqlConteo)) {
+            conteo.setInt(1, idSeccion);
+            try (ResultSet resultado = conteo.executeQuery()) {
+                if (resultado.next()) {
+                    totalElementos = resultado.getInt(1);
+                }
+            }
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                preparedStatement.setInt(1, idSeccion);
+                preparedStatement.setInt(2, tamano);
+                preparedStatement.setInt(3, offset);
+                try (ResultSet resultado = preparedStatement.executeQuery()) {
+                    while (resultado.next()) {
+                        estudiantes.add(crearEstudiante(resultado));
+                    }
+                }
+            }
+        }
+        return new PaginaResponse<>(estudiantes, pagina, tamano, totalElementos);
+    }
+
+    public PaginaResponse<Estudiante> estudiantesPorEstadoPaginados(EstadoEstudiante estadoEstudiante, int pagina, int tamano) throws SQLException {
+        int offset = new objetos.Paginacion().calcularDesplazamiento(pagina, tamano);
+        List<Estudiante> estudiantes = new ArrayList<>();
+        int totalElementos = 0;
+        String sqlConteo = "SELECT COUNT(*) FROM Estudiante WHERE estado = ?";
+        String sql = "SELECT * FROM Estudiante WHERE estado = ? ORDER BY idEstudiante LIMIT ? OFFSET ?";
+
+        try (Connection connection = ConnectionDB.getConexion();
+             PreparedStatement conteo = connection.prepareStatement(sqlConteo)) {
+            conteo.setString(1, estadoEstudiante.name());
+            try (ResultSet resultado = conteo.executeQuery()) {
+                if (resultado.next()) {
+                    totalElementos = resultado.getInt(1);
+                }
+            }
+
+            try (PreparedStatement consulta = connection.prepareStatement(sql)) {
+                consulta.setString(1, estadoEstudiante.name());
+                consulta.setInt(2, tamano);
+                consulta.setInt(3, offset);
+                try (ResultSet resultado = consulta.executeQuery()) {
+                    while (resultado.next()) {
+                        estudiantes.add(crearEstudiante(resultado));
+                    }
+                }
+            }
+        }
+        return new PaginaResponse<>(estudiantes, pagina, tamano, totalElementos);
     }
     public List<Estudiante> obtenerEstudiantesSegunEstado(EstadoEstudiante estadoEstudiante) throws SQLException {
         List<Estudiante> estudiantes = new ArrayList<>();
@@ -84,6 +152,51 @@ public class EstudianteDB {
             preparedStatement.executeUpdate();
         }
     }
+
+    public void actualizarEstudiante(EstudianteActualizarRequest estudiante) throws SQLException, ValidacionException{
+        StringBuilder sql = new StringBuilder("UPDATE Estudiante SET ");
+        List<Object> parametros = new ArrayList<>();
+        boolean hayCampos = false;
+
+        if (estudiante.getAlergia() != null) {
+            sql.append("alergias = ?");
+            parametros.add(estudiante.getAlergia());
+            hayCampos = true;
+        }
+        if (estudiante.getNombreEncargado() != null ) {
+            if (hayCampos) sql.append(", ");
+            sql.append("nombreEncargado = ?");
+            parametros.add(estudiante.getNombreEncargado());
+            hayCampos = true;
+        }
+        if (estudiante.getTelefonoEncargado() != null) {
+            if (hayCampos) sql.append(", ");
+            sql.append("telefonoEncargado = ?");
+            parametros.add(Double.parseDouble(estudiante.getTelefonoEncargado()));
+            hayCampos = true;
+        }
+        if (estudiante.getCorreoEncargado() != null) {
+            if (hayCampos) sql.append(", ");
+            sql.append("correoEncargado = ?");
+            parametros.add(estudiante.getCorreoEncargado());
+            hayCampos = true;
+        }
+        if (!hayCampos) {
+            throw new ValidacionException("No se proporcionó ningun campo para actualizar.");
+        }
+
+        sql.append(" WHERE idEstudiante = ?");
+        parametros.add(estudiante.getIdEstudiante());
+
+        try (Connection connection = ConnectionDB.getConexion();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql.toString())) {
+            for (int i = 0; i < parametros.size(); i++) {
+                preparedStatement.setObject(i + 1, parametros.get(i));
+            }
+            preparedStatement.executeUpdate();
+        }
+    }
+
     private Estudiante crearEstudiante(ResultSet resultSet) throws SQLException {
         int idEstudiante = resultSet.getInt("idEstudiante");
         String cui = resultSet.getString("cui");

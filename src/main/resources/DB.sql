@@ -44,7 +44,7 @@ CREATE TABLE Grado(
     idGrado INT AUTO_INCREMENT PRIMARY KEY,
     nombreGrado varchar(150) NOT NULL,
     grado ENUM('PRE_PRIMARIA', 'PRIMARIA', 'BASICO', 'DIVERSIFICADO'),
-    idCarrera INT DEFAULT 0,
+    idCarrera INT NUll DEFAULT NULL,
     FOREIGN KEY(idCarrera) REFERENCES Carrera(idCarrera)
 );
 CREATE TABLE Curso(

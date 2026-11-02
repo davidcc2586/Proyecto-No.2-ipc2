@@ -5,6 +5,10 @@ public class NotaRequest {
     private String idEstudiante;
     private String punteoObtenido;
 
+    public NotaRequest(){
+
+    }
+
     public NotaRequest(String idActividad, String idEstudiante, String punteoObtenido) {
         this.idActividad = idActividad;
         this.idEstudiante = idEstudiante;

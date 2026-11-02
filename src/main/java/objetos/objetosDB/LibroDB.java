@@ -6,6 +6,7 @@ import objetos.objetosRequest.LibroActualizarRequest;
 import objetos.objetosRequest.LibroRequest;
 import objetos.objetosResponse.Libro;
 import objetos.objetosResponse.LibroSelectResponse;
+import objetos.objetosResponse.PaginaResponse;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -82,6 +83,58 @@ public class LibroDB {
         return libroResponses;
     }
 
+    public PaginaResponse<Libro> librosPaginados(int pagina, int tamano) throws SQLException {
+        int offset = new objetos.Paginacion().calcularDesplazamiento(pagina, tamano);
+        List<Libro> libros = new ArrayList<>();
+        int totalElementos = 0;
+        try (Connection connection = ConnectionDB.getConexion();
+             PreparedStatement conteo = connection.prepareStatement("SELECT COUNT(*) FROM Libro")) {
+            try (ResultSet resultado = conteo.executeQuery()) {
+                if (resultado.next()) {
+                    totalElementos = resultado.getInt(1);
+                }
+            }
+            try (PreparedStatement consulta = connection.prepareStatement("SELECT * FROM Libro ORDER BY idLibro LIMIT ? OFFSET ?")) {
+                consulta.setInt(1, tamano);
+                consulta.setInt(2, offset);
+                try (ResultSet resultado = consulta.executeQuery()) {
+                    while (resultado.next()) {
+                        libros.add(crearLibro(resultado));
+                    }
+                }
+            }
+        }
+        return new PaginaResponse<>(libros, pagina, tamano, totalElementos);
+    }
+
+    public PaginaResponse<Libro> librosDisponiblesPaginados(int pagina, int tamano) throws SQLException {
+        int offset = new objetos.Paginacion().calcularDesplazamiento(pagina, tamano);
+        List<Libro> libros = new ArrayList<>();
+        int totalElementos = 0;
+        String filtro = " WHERE estado = ? AND cantidad > 0";
+        try (Connection connection = ConnectionDB.getConexion();
+             PreparedStatement conteo = connection.prepareStatement("SELECT COUNT(*) FROM Libro" + filtro)) {
+            conteo.setString(1, Estado.ACTIVO.name());
+            try (ResultSet resultado = conteo.executeQuery()) {
+                if (resultado.next()) {
+                    totalElementos = resultado.getInt(1);
+                }
+            }
+            String sql= "SELECT * FROM Libro" + filtro + " ORDER BY titulo, idLibro LIMIT ? OFFSET ?";
+            try (PreparedStatement consulta = connection.prepareStatement(sql)) {
+                consulta.setString(1, Estado.ACTIVO.name());
+                consulta.setInt(2, tamano);
+                consulta.setInt(3, offset);
+                try (ResultSet resultado = consulta.executeQuery()) {
+                    while (resultado.next()) {
+                        libros.add(crearLibro(resultado));
+                    }
+                }
+            }
+        }
+        return new PaginaResponse<>(libros, pagina, tamano, totalElementos);
+    }
+
     public Optional<Libro> obtenerLibro(int idLIbro) throws SQLException{
         Optional<Libro> libro = Optional.empty();
         String sqlSolicitarLibro = "SELECT * FROM Libro WHERE idLibro = ?";
@@ -110,14 +163,15 @@ public class LibroDB {
     }
 
     public void actualizarLibro(LibroActualizarRequest libro) throws SQLException{
-        String sqlIngresarLibro = "UPDATE Libro set autor = ?,anio = ?,titulo = ?,editorial = ? WHERE idLibro = ?";
+        String sqlIngresarLibro = "UPDATE Libro set autor = ?,anio = ?,titulo = ?,editorial = ?, cantidad = ? WHERE idLibro = ?";
         try (Connection connection = ConnectionDB.getConexion();
              PreparedStatement preparedStatement = connection.prepareStatement(sqlIngresarLibro)){
             preparedStatement.setString(1,libro.getAutor());
             preparedStatement.setInt(2,Integer.parseInt(libro.getAnio()));
             preparedStatement.setString(3,libro.getTitulo());
             preparedStatement.setString(4,libro.getEditorial());
-            preparedStatement.setInt(5,Integer.parseInt(libro.getIdLibro()));
+            preparedStatement.setInt(5,Integer.parseInt(libro.getCantidad()));
+            preparedStatement.setInt(6,Integer.parseInt(libro.getIdLibro()));
             preparedStatement.executeUpdate();
         }
     }
@@ -136,16 +190,17 @@ public class LibroDB {
         return librosResumen;
     }
 
-    public int cantidadLibrosRestantes(int idLibro) throws SQLException{
-        String sql = "SELECT COUNT(*) FROM Libro WHERE idLibro = ?";
+    public int cantidadLibrosDisponibles(int idLibro) throws SQLException{
+        String sql = "SELECT cantidad FROM Libro WHERE idLibro = ? AND estado = ?";
         try (Connection connection = ConnectionDB.getConexion();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)){
             preparedStatement.setInt(1,idLibro);
+            preparedStatement.setString(2, Estado.ACTIVO.name());
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()){
                 return resultSet.getInt(1);
             } else {
-                return -1;
+                return 0;
             }
         }
     }

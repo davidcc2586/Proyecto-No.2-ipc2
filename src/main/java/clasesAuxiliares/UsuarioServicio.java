@@ -6,6 +6,7 @@ import objetos.objetosDB.UsuarioDB;
 import objetos.objetosRequest.UsuarioActualizarRequest;
 import objetos.objetosResponse.Usuario;
 import objetos.objetosResponse.UsuarioSelectResponse;
+import objetos.objetosResponse.PaginaResponse;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -15,6 +16,11 @@ public class UsuarioServicio {
     public List<Usuario> obtenerUsuarioSegunRol(RolUsuario rolUsuario) throws SQLException {
         UsuarioDB usuarioDB = new UsuarioDB();
         return usuarioDB.usuariosSegunRol(rolUsuario);
+    }
+
+    public PaginaResponse<Usuario> obtenerUsuarioSegunRolPaginado(RolUsuario rolUsuario, int pagina, int tamano) throws SQLException {
+        UsuarioDB usuarioDB = new UsuarioDB();
+        return usuarioDB.usuariosSegunRolPaginados(rolUsuario, pagina, tamano);
     }
     public List<UsuarioSelectResponse> resumenUsuarios(RolUsuario rolUsuario) throws SQLException {
         UsuarioDB usuarioDB = new UsuarioDB();
@@ -59,7 +65,7 @@ public class UsuarioServicio {
         usuarioDB.actualizarDatosUsuario(usuario);
     }
 
-    public void desactivarActivarUsuario(int idUsuario) throws SQLException{
+    public void desactivarActivarUsuario(int idUsuario) throws SQLException, ValidacionException{
         UsuarioDB usuarioDB = new UsuarioDB();
         usuarioDB.desactivarActivarUsuario(idUsuario);
     }

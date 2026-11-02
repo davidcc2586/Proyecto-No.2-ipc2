@@ -4,6 +4,10 @@ public class InicioSesionRequest {
     private String usuario;
     private String clave;
 
+    public InicioSesionRequest(){
+
+    }
+
     public InicioSesionRequest(String usuario, String contraseña) {
         this.usuario = usuario;
         this.clave = contraseña;

@@ -7,6 +7,10 @@ public class Carrera {
     private String nombreCarrera;
     private EstadoCarrera estadoCarrera;
 
+    public Carrera(){
+
+    }
+
     public Carrera(int idCarrera, String nombreCarrera, EstadoCarrera estadoCarrera) {
         this.idCarrera = idCarrera;
         this.nombreCarrera = nombreCarrera;

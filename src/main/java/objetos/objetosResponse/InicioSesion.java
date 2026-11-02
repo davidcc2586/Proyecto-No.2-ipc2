@@ -8,6 +8,10 @@ public class InicioSesion {
     private RolUsuario rolUsuario;
     private int anioLectivo;
 
+    public InicioSesion(){
+
+    }
+
     public InicioSesion(int idUsuario, String usuario, RolUsuario rolUsuario, int anioLectivo) {
         this.idUsuario = idUsuario;
         this.usuario = usuario;

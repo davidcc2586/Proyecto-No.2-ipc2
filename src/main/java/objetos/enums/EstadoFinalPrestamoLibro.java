@@ -2,7 +2,7 @@ package objetos.enums;
 
 public enum EstadoFinalPrestamoLibro {
     MOROSO("Moroso"),
-    Puntual("Puntual");
+    PUNTUAL("Puntual");
 
     private final String descripcion;
 

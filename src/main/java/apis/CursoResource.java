@@ -5,6 +5,8 @@ import clasesAuxiliares.EstudianteServicio;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import objetos.objetosResponse.Curso;
+import objetos.objetosResponse.PaginaResponse;
 
 import java.sql.SQLException;
 
@@ -24,6 +26,20 @@ public class CursoResource {
         }
     }
 
+        @GET
+        @Path("cursosMaestroPaginados/{idMaestro}")
+        public Response cursosMaestroPaginados(@PathParam("idMaestro") int idMaestro, @QueryParam("pagina") @DefaultValue("0") int pagina, @QueryParam("tamano") @DefaultValue("10") int tamano) {
+            try {
+                CursoServicio cursoServicio = new CursoServicio();
+                PaginaResponse<Curso> cursos = cursoServicio.cursosMaestroPaginados(idMaestro, pagina, tamano);
+                return Response.ok(cursos).build();
+            } catch (IllegalArgumentException e) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\": \"" + e.getMessage() + "\"}").build();
+            } catch (SQLException e) {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\": \"Error en el servidor\"}").build();
+            }
+    }
+
     @GET
     @Path("cursosEstudiante/{idEstudiante}")
     public Response cursosEstudiante(@PathParam("idEstudiante") int idEstudiante){
@@ -33,6 +49,20 @@ public class CursoResource {
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\": \"Error en el servidor\"}").build();
         }
+    }
+
+        @GET
+        @Path("cursosEstudiantePaginados/{idEstudiante}")
+        public Response cursosEstudiantePaginados(@PathParam("idEstudiante") int idEstudiante, @QueryParam("pagina") @DefaultValue("0") int pagina, @QueryParam("tamano") @DefaultValue("10") int tamano) {
+            try {
+                CursoServicio cursoServicio = new CursoServicio();
+                PaginaResponse<Curso> cursos = cursoServicio.cursosEstudiantePaginados(idEstudiante, pagina, tamano);
+                return Response.ok(cursos).build();
+            } catch (IllegalArgumentException e) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\": \"" + e.getMessage() + "\"}").build();
+            } catch (SQLException e) {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\": \"Error en el servidor\"}").build();
+            }
     }
 
     @POST
@@ -56,6 +86,20 @@ public class CursoResource {
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\": \"Error en el servidor\"}").build();
         }
+    }
+
+        @GET
+        @Path("cursosPaginados/{estado}")
+        public Response cursosPaginados(@PathParam("estado") String estado, @QueryParam("pagina") @DefaultValue("0") int pagina, @QueryParam("tamano") @DefaultValue("10") int tamano) {
+            try {
+                CursoServicio cursoServicio = new CursoServicio();
+                PaginaResponse<Curso> cursos = cursoServicio.cursosDisponiblesPaginados(estado, pagina, tamano);
+                return Response.ok(cursos).build();
+            } catch (IllegalArgumentException e) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\": \"" + e.getMessage() + "\"}").build();
+            } catch (SQLException e) {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\": \"Error en el servidor\"}").build();
+            }
     }
 
     @PATCH

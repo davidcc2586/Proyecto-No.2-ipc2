@@ -6,6 +6,10 @@ public class AsignarMaestroRequest {
     private String idMaestro;
     private String idCurso;
 
+    public AsignarMaestroRequest(){
+
+    }
+
     public AsignarMaestroRequest(String idSeccion, String idMaestro, String idCurso) {
         this.idSeccion = idSeccion;
         this.idMaestro = idMaestro;

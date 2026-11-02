@@ -4,6 +4,9 @@ public class Curso {
     private int idCurso;
     private String nombreCurso;
 
+    public Curso(){
+
+    }
     public Curso(int idCurso, String nombreCurso) {
         this.idCurso = idCurso;
         this.nombreCurso = nombreCurso;

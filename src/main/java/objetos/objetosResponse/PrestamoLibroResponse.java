@@ -18,6 +18,10 @@ public class PrestamoLibroResponse {
     private double multa;
     private String nombreLibro;
 
+    public PrestamoLibroResponse(){
+
+    }
+
     public PrestamoLibroResponse(int idPrestamoLibro, int idLibro, String nombreLibro, int idEstudiante, EstadoPrestamoLibro estadoPrestamoLibro, EstadoFinalPrestamoLibro estadoFinalPrestamoLibro, double costoDia, LocalDate fechaPrestamo, LocalDate fechaEstimadaDevolucion, LocalDate fechaDevolucion,  Double multa) {
         this.idPrestamoLibro = idPrestamoLibro;
         this.idLibro = idLibro;

@@ -4,6 +4,7 @@ import objetos.enums.Estado;
 import objetos.enums.EstadoCarrera;
 import objetos.objetosResponse.Carrera;
 import objetos.objetosResponse.CarreraActualizarRequest;
+import objetos.objetosResponse.PaginaResponse;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -26,6 +27,30 @@ public class CarreraDB {
             }
         }
         return carreraRespons;
+    }
+
+    public PaginaResponse<Carrera> carrerasPaginadas(int pagina, int tamano) throws SQLException {
+        int offset = new objetos.Paginacion().calcularDesplazamiento(pagina, tamano);
+        List<Carrera> carreras = new ArrayList<>();
+        int totalElementos = 0;
+        try (Connection connection = ConnectionDB.getConexion();
+             PreparedStatement conteo = connection.prepareStatement("SELECT COUNT(*) FROM Carrera")) {
+            try (ResultSet resultado = conteo.executeQuery()) {
+                if (resultado.next()) {
+                    totalElementos = resultado.getInt(1);
+                }
+            }
+            try (PreparedStatement consulta = connection.prepareStatement("SELECT * FROM Carrera ORDER BY idCarrera LIMIT ? OFFSET ?")) {
+                consulta.setInt(1, tamano);
+                consulta.setInt(2, offset);
+                try (ResultSet resultado = consulta.executeQuery()) {
+                    while (resultado.next()) {
+                        carreras.add(crearCarrera(resultado));
+                    }
+                }
+            }
+        }
+        return new PaginaResponse<>(carreras, pagina, tamano, totalElementos);
     }
     public void activarDesactivarCarrera(int idCarrera) throws SQLException{
         try (Connection connection = ConnectionDB.getConexion()){
@@ -67,14 +92,14 @@ public class CarreraDB {
         try (Connection connection = ConnectionDB.getConexion();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)){
             preparedStatement.setString(1, carrera.getNombreCarrera());
-            preparedStatement.setInt(1,Integer.parseInt(carrera.getIdCarrera()));
+            preparedStatement.setInt(2,Integer.parseInt(carrera.getIdCarrera()));
             preparedStatement.executeUpdate();
         }
     }
 
     public Optional<Carrera> obtenerLibro(int idCarrera) throws SQLException{
         String sql = "SELECT * FROM Carrera WHERE idCarrera = ?";
-        Optional<Carrera> carrera = Optional.empty();
+        Optional<Carrera> carrera;
         try (Connection connection = ConnectionDB.getConexion();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)){
             preparedStatement.setInt(1, idCarrera);
@@ -87,7 +112,7 @@ public class CarreraDB {
     private Carrera crearCarrera(ResultSet resultSet) throws SQLException {
         int idCarrera = resultSet.getInt("idCarrera");
         String nombreCarrera = resultSet.getString("nombreCarrera");
-        EstadoCarrera estadoCarrera = EstadoCarrera.valueOf(resultSet.getString("estadoCarrera"));
+        EstadoCarrera estadoCarrera = EstadoCarrera.valueOf(resultSet.getString("estado"));
 
         return new Carrera(idCarrera, nombreCarrera, estadoCarrera);
     }

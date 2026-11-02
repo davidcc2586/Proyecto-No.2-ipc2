@@ -3,6 +3,7 @@ package clasesAuxiliares;
 import objetos.objetosDB.CarreraDB;
 import objetos.objetosResponse.Carrera;
 import objetos.objetosResponse.CarreraActualizarRequest;
+import objetos.objetosResponse.PaginaResponse;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -11,6 +12,11 @@ public class CarreraServicio {
     public List<Carrera> catalogo() throws SQLException{
         CarreraDB carreraDB = new CarreraDB();
         return carreraDB.todosLasCarreras();
+    }
+
+    public PaginaResponse<Carrera> catalogoPaginado(int pagina, int tamano) throws SQLException {
+        CarreraDB carreraDB = new CarreraDB();
+        return carreraDB.carrerasPaginadas(pagina, tamano);
     }
 
     public void nuevaCarrera(String nombreCarrera)throws SQLException{

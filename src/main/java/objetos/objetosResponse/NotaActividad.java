@@ -5,6 +5,9 @@ public class NotaActividad {
     private int idEstudiante;
     private double punteoObtenido;
 
+    public NotaActividad(){
+
+    }
     public NotaActividad(int idActividad, int idEstudiante, double punteoObtenido) {
         this.idActividad = idActividad;
         this.idEstudiante = idEstudiante;

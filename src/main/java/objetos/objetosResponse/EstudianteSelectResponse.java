@@ -4,6 +4,10 @@ public class EstudianteSelectResponse {
     private int idEstudiante;
     private String nombreCompleto;
 
+    public EstudianteSelectResponse(){
+
+    }
+
     public EstudianteSelectResponse(int idEstudiante, String nombreCompleto) {
         this.idEstudiante = idEstudiante;
         this.nombreCompleto = nombreCompleto;

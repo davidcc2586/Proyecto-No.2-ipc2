@@ -15,6 +15,10 @@ public class EstudianteRequest {
     private String telefonoEncargado;
     private String correoEncargado;
 
+    public EstudianteRequest(){
+
+    }
+
     public EstudianteRequest(String cui, String nombre, String apellido, String fechaNacimiento, String usuario, String clave, String claveConfirmacion, String anioInscripcion, String tipoSangre, String alergia, String nombreEncargado, String telefonoEncargado, String correoEncargado) {
         this.cui = cui;
         this.nombre = nombre;

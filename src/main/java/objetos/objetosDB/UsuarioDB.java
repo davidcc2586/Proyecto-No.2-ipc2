@@ -1,12 +1,13 @@
 package objetos.objetosDB;
 
+import objetos.UtilidadesBase64;
 import objetos.enums.Estado;
 import objetos.enums.RolUsuario;
 import objetos.exceptions.ValidacionException;
 import objetos.objetosRequest.UsuarioActualizarRequest;
 import objetos.objetosResponse.Usuario;
+import objetos.objetosResponse.PaginaResponse;
 
-import javax.swing.text.html.Option;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -33,18 +34,51 @@ public class UsuarioDB {
 
         return usuarioResponses;
     }
-    public void ingresarNuevoUsuario(Usuario usuario) throws SQLException{
-        String sqlIngresarEstudiante = "insert into Usuario(cui, nombre, apellido, fechaNacimiento, usuario, clave, fechaContratacion, salario) VALUES(?,?,?,?,?,?,?,?)";
+
+    public PaginaResponse<Usuario> usuariosSegunRolPaginados(RolUsuario rolUsuario, int pagina, int tamano) throws SQLException {
+        int offset = new objetos.Paginacion().calcularDesplazamiento(pagina, tamano);
+        List<Usuario> usuarios = new ArrayList<>();
+        int totalElementos = 0;
+        String sqlConteo = "SELECT COUNT(*) FROM Usuario WHERE rol = ?";
+        String sqlUsuarios = "SELECT * FROM Usuario WHERE rol = ? ORDER BY idUsuario LIMIT ? OFFSET ?";
+
+        try (Connection connection = ConnectionDB.getConexion();
+             PreparedStatement conteo = connection.prepareStatement(sqlConteo)) {
+            conteo.setString(1, rolUsuario.name());
+            try (ResultSet resultado = conteo.executeQuery()) {
+                if (resultado.next()) {
+                    totalElementos = resultado.getInt(1);
+                }
+            }
+
+            try (PreparedStatement consulta = connection.prepareStatement(sqlUsuarios)) {
+                consulta.setString(1, rolUsuario.name());
+                consulta.setInt(2, tamano);
+                consulta.setInt(3, offset);
+                try (ResultSet resultado = consulta.executeQuery()) {
+                    while (resultado.next()) {
+                        usuarios.add(crearUsuario(resultado));
+                    }
+                }
+            }
+        }
+        return new PaginaResponse<>(usuarios, pagina, tamano, totalElementos);
+    }
+    public void ingresarNuevoUsuario(Usuario usuario) throws SQLException {
+        String sqlIngresarEstudiante = "insert into Usuario(cui, nombre, apellido, fechaNacimiento, usuario, clave, fechaContratacion, salario, rol) VALUES(?,?,?,?,?,?,?,?,?)";
+
         try (Connection connection = ConnectionDB.getConexion();
              PreparedStatement preparedStatement = connection.prepareStatement(sqlIngresarEstudiante)){
+            UtilidadesBase64 utilidadesBase64 = new UtilidadesBase64();
             preparedStatement.setString(1, usuario.getCui());
             preparedStatement.setString(2, usuario.getNombre());
             preparedStatement.setString(3, usuario.getApellido());
-            preparedStatement.setDate(4,java.sql.Date.valueOf(usuario.getFechaNacimiento()));
+            preparedStatement.setDate(4, java.sql.Date.valueOf(usuario.getFechaNacimiento()));
             preparedStatement.setString(5, usuario.getUsuario());
-            preparedStatement.setString(6, usuario.getClave());
-            preparedStatement.setDate(7,java.sql.Date.valueOf(usuario.getFechaContratacion()));
+            preparedStatement.setString(6, utilidadesBase64.codificar(usuario.getClave()));
+            preparedStatement.setDate(7, java.sql.Date.valueOf(usuario.getFechaContratacion()));
             preparedStatement.setDouble(8, usuario.getSalario());
+            preparedStatement.setString(9,usuario.getRolUsuario().name());
             preparedStatement.executeUpdate();
         }
     }
@@ -93,9 +127,10 @@ public class UsuarioDB {
         }
     }
 
-    public void desactivarActivarUsuario(int idUsuario) throws SQLException{
+    public void desactivarActivarUsuario(int idUsuario) throws SQLException, ValidacionException{
         Estado estado;
-        String sqlSolicitarEstadoActual = "SELECT estado FROM Usuario WHERE idUsuario = ?";
+        RolUsuario rolUsuario;
+        String sqlSolicitarEstadoActual = "SELECT estado, rol FROM Usuario WHERE idUsuario = ?";
 
         try (Connection connection = ConnectionDB.getConexion();
              PreparedStatement preparedStatement = connection.prepareStatement(sqlSolicitarEstadoActual)){
@@ -103,8 +138,13 @@ public class UsuarioDB {
             ResultSet resultSet = preparedStatement.executeQuery();
             resultSet.next();
             estado = Estado.valueOf(resultSet.getString("estado"));
+            rolUsuario = RolUsuario.valueOf(resultSet.getString("rol"));
         }
-
+        if (rolUsuario.equals(RolUsuario.SUPERADMIN) && estado.equals(Estado.ACTIVO)){
+            if(1 == cantidadSuperAdmin()){
+                throw new ValidacionException("Siempre tiene que haber un Super Admin activo.");
+            }
+        }
         String sqlCambiarEstado = "UPDATE Usuario SET estado = ? WHERE idUsuario = ?";
         try (Connection connection = ConnectionDB.getConexion();
              PreparedStatement preparedStatement = connection.prepareStatement(sqlCambiarEstado)){
@@ -115,6 +155,18 @@ public class UsuarioDB {
             }
             preparedStatement.setInt(2,idUsuario);
             preparedStatement.executeUpdate();
+        }
+    }
+
+    private int cantidadSuperAdmin() throws SQLException{
+        String sql = "SELECT count(*) FROM Usuario WHERE rol = ? AND estado = ?";
+        try (Connection connection = ConnectionDB.getConexion();
+            PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+            preparedStatement.setString(1,RolUsuario.SUPERADMIN.name());
+            preparedStatement.setString(2,Estado.INACTIVO.name());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+            return resultSet.getInt(1);
         }
     }
 
@@ -139,9 +191,10 @@ public class UsuarioDB {
         LocalDate fechaNacimiento = resultSet.getDate("fechaNacimiento").toLocalDate();
         String usuario = resultSet.getString("usuario");
         String clave = resultSet.getString("clave");
+        Estado estado = Estado.valueOf(resultSet.getString("estado"));
         RolUsuario rolUsuario = RolUsuario.valueOf(resultSet.getString("rol"));
         LocalDate fechaContratacion = resultSet.getDate("fechaContratacion").toLocalDate();
         double salario = resultSet.getDouble("salario");
-        return new Usuario(idUsuario,cui,nombre,apellido,fechaNacimiento,usuario,clave,rolUsuario,fechaContratacion,salario);
+        return new Usuario(idUsuario,cui,nombre,apellido,fechaNacimiento,usuario,clave,estado,rolUsuario,fechaContratacion,salario);
     }
 }

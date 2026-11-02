@@ -6,6 +6,10 @@ public class Factura {
     private String nombreConsumidor;
     private String nit;
 
+    public Factura(){
+
+    }
+
     public Factura(int idFactura, int idPago, String nombreConsumidor, String nit) {
         this.idFactura = idFactura;
         this.idPago = idPago;

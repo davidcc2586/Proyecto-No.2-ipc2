@@ -5,6 +5,9 @@ public class SeccionRequest {
     private String anio;
     private String nombreSeccion;
 
+    public SeccionRequest(){
+
+    }
     public SeccionRequest(String idGrado, String anio, String nombreSeccion) {
         this.idGrado = idGrado;
         this.anio = anio;

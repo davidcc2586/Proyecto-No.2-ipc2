@@ -2,26 +2,28 @@ package objetos.objetosRequest;
 
 public class AsignacionEstudianteRequest {
     private String idSeccion;
-    private String isEstudiante;
+    private String idEstudiante;
+    public AsignacionEstudianteRequest(){
+    }
 
     public AsignacionEstudianteRequest(String idSeccion, String isEstudiante) {
         this.idSeccion = idSeccion;
-        this.isEstudiante = isEstudiante;
+        this.idEstudiante = isEstudiante;
     }
 
     public String getIdSeccion() {
         return idSeccion;
     }
 
-    public String getIsEstudiante() {
-        return isEstudiante;
+    public String getIdEstudiante() {
+        return idEstudiante;
     }
 
     public void setIdSeccion(String idSeccion) {
         this.idSeccion = idSeccion;
     }
 
-    public void setIsEstudiante(String isEstudiante) {
-        this.isEstudiante = isEstudiante;
+    public void setIdEstudiante(String idEstudiante) {
+        this.idEstudiante = idEstudiante;
     }
 }

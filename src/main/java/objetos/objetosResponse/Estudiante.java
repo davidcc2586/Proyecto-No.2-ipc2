@@ -20,6 +20,10 @@ public class Estudiante {
     private String telefonoEncargado;
     private String correoEncargado;
 
+    public Estudiante(){
+
+    }
+
     public Estudiante(int idEstudiante, String cui, String nombre, String apellido, LocalDate fechaNacimiento, String usuario, String clave, int anioInscripcion, EstadoEstudiante estadoEstudiante, String tipoSangre, String alergia, String nombreEncargado, String telefonoEncargado, String correoEncargado) {
         this.idEstudiante = idEstudiante;
         this.cui = cui;

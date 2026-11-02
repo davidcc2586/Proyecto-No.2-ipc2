@@ -9,6 +9,8 @@ import objetos.objetosRequest.LibroActualizarRequest;
 import objetos.objetosRequest.LibroRequest;
 import objetos.objetosRequest.PrestamoLibroDevolucionRequest;
 import objetos.objetosRequest.PrestamoLibroRequest;
+import objetos.objetosResponse.PaginaResponse;
+import objetos.objetosResponse.PrestamoLibroResponse;
 
 import java.sql.SQLException;
 
@@ -36,6 +38,32 @@ public class BibliotecaResource {
             return Response.ok(bibliotecaServicio.catalogo()).build();
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\": \"Error interno en el servidor\"}").build();
+        }
+    }
+
+    @GET
+    @Path("catalogoPaginado")
+    public Response catalogoLibrosPaginado(@QueryParam("pagina") @DefaultValue("0") int pagina, @QueryParam("tamano") @DefaultValue("10") int tamano) {
+        try {
+            BibliotecaServicio bibliotecaServicio = new BibliotecaServicio();
+            PaginaResponse<?> libros = bibliotecaServicio.catalogoPaginado(pagina, tamano);
+            return Response.ok(libros).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\": \"" + e.getMessage() + "\"}").build();
+        } catch (SQLException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\": \"Error interno en el servidor\"}").build();
+        }
+    }
+
+    @GET
+    @Path("catalogoDisponiblePaginado")
+    public Response catalogoDisponiblePaginado(@QueryParam("pagina") @DefaultValue("0") int pagina, @QueryParam("tamano") @DefaultValue("10") int tamano) {
+        try {
+            return Response.ok(new BibliotecaServicio().catalogoDisponiblePaginado(pagina, tamano)).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\": \"" + e.getMessage() + "\"}").build();
+        } catch (SQLException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\": \"No se pudo consultar el catálogo disponible\"}").build();
         }
     }
 
@@ -114,6 +142,20 @@ public class BibliotecaResource {
         }
     }
 
+    @GET
+    @Path("prestamoLibroPaginado/{estado}/{filtroMoroso}")
+    public Response prestamosLibroPaginados(@PathParam("estado") String estadoPrestamo, @PathParam("filtroMoroso") boolean filtro, @QueryParam("pagina") @DefaultValue("0") int pagina, @QueryParam("tamano") @DefaultValue("10") int tamano) {
+        try {
+            BibliotecaServicio bibliotecaServicio = new BibliotecaServicio();
+            PaginaResponse<PrestamoLibroResponse> prestamos = bibliotecaServicio.prestamosLibroPaginados(estadoPrestamo, filtro, pagina, tamano);
+            return Response.ok(prestamos).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\": \"" + e.getMessage() + "\"}").build();
+        } catch (SQLException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\": \"Error interno en el servidor\"}").build();
+        }
+    }
+
     @PATCH
     @Path("RegistrarPrestamo")
     public Response registrarNuevoPrestamoLibro(PrestamoLibroRequest prestamoLibroRequest){
@@ -150,5 +192,19 @@ public class BibliotecaResource {
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\": \"Error interno en el servidor\"}").build();
         }
+    }
+
+        @GET
+        @Path("prestamoLibroEstudiantePaginado/{estado}/{idEstudiante}/{filtroMoroso}")
+        public Response prestamosLibroEstudiantePaginados(@PathParam("estado") String estadoPrestamo, @PathParam("idEstudiante") int idEstudiante, @PathParam("filtroMoroso") boolean filtro, @QueryParam("pagina") @DefaultValue("0") int pagina, @QueryParam("tamano") @DefaultValue("10") int tamano) {
+            try {
+                BibliotecaServicio bibliotecaServicio = new BibliotecaServicio();
+                PaginaResponse<PrestamoLibroResponse> prestamos = bibliotecaServicio.prestamosLibroEstudiantePaginados(idEstudiante, estadoPrestamo, filtro, pagina, tamano);
+                return Response.ok(prestamos).build();
+            } catch (IllegalArgumentException e) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\": \"" + e.getMessage() + "\"}").build();
+            } catch (SQLException e) {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\": \"Error interno en el servidor\"}").build();
+            }
     }
 }

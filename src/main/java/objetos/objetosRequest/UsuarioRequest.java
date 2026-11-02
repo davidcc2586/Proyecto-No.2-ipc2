@@ -12,6 +12,9 @@ public class UsuarioRequest {
     private String fechaContratacion;
     private String salario;
 
+    public UsuarioRequest() {
+    }
+
     public UsuarioRequest(String cui, String nombre, String apellido, String fechaNacimiento, String usuario, String clave, String claveConfirmacion, String rolUsuario, String fechaContratacion, String salario) {
         this.cui = cui;
         this.nombre = nombre;

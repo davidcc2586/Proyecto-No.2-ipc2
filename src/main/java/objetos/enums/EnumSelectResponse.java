@@ -4,6 +4,8 @@ public class EnumSelectResponse {
     private String valor;
     private String etiqueta;
 
+    public EnumSelectResponse() {
+    }
     public EnumSelectResponse(String valor, String etiqueta) {
         this.valor = valor;
         this.etiqueta = etiqueta;

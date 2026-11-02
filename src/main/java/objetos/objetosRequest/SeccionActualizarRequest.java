@@ -6,6 +6,9 @@ public class SeccionActualizarRequest {
     private String nombreSeccion;
     private String idSeccion;
 
+    public SeccionActualizarRequest(){
+
+    }
     public SeccionActualizarRequest(String idSeccion, String idGrado, String anio, String nombreSeccion) {
         this.idSeccion = idSeccion;
         this.idGrado = idGrado;

@@ -8,6 +8,10 @@ public class UsuarioActualizarRequest {
     private String salario;
     private String rolUsuario;
 
+    public UsuarioActualizarRequest(){
+
+    }
+
     public UsuarioActualizarRequest(String idUsuario, String clave, String claveConfirmacion, String usuario, String salario, String rolUsuario) {
         this.idUsuario = idUsuario;
         this.clave = clave;

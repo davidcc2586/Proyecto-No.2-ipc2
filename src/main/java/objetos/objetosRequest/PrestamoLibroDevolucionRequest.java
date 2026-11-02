@@ -4,6 +4,10 @@ public class PrestamoLibroDevolucionRequest {
     private String fechaDevolucion;
     private String idPrestamoLibro;
 
+    public PrestamoLibroDevolucionRequest(){
+
+    }
+
     public PrestamoLibroDevolucionRequest(String fechaDevolucion, String idPrestamoLibro) {
         this.fechaDevolucion = fechaDevolucion;
         this.idPrestamoLibro = idPrestamoLibro;

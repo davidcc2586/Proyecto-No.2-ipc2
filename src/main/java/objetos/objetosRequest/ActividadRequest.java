@@ -8,6 +8,9 @@ public class ActividadRequest {
     private String ponderacion;
     private String tipoActividad;
 
+    public ActividadRequest(){
+
+    }
     public ActividadRequest(String idSeccion, String idCurso, String nombreActividad, String ponderacion, String tipoActividad) {
         this.idSeccion = idSeccion;
         this.idCurso = idCurso;

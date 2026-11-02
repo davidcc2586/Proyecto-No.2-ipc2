@@ -13,7 +13,7 @@ public class FacturaDB {
 
     public List<Factura> todosLasFacturas() throws SQLException {
         List<Factura> facturaResponses = new ArrayList<>();
-        String sqlSolicitarFacturas = "SELECT * FROM Factura";
+        String sqlSolicitarFacturas = "SELECT * FROM Factura ORDER BY idFactura DESC";
 
         try (Connection connection = ConnectionDB.getConexion();
              PreparedStatement preparedStatement = connection.prepareStatement(sqlSolicitarFacturas);
@@ -35,6 +35,23 @@ public class FacturaDB {
             preparedStatement.executeUpdate();
         }
     }
+
+    public int ingresarNuevaFactura(Connection connection, int idPago, String nombreConsumidor, String nit) throws SQLException {
+        String sql = "INSERT INTO Factura(idPago, nombreConsumidor, NIT) VALUES(?,?,?)";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.setInt(1, idPago);
+            preparedStatement.setString(2, nombreConsumidor == null || nombreConsumidor.isBlank() ? "CONSUMIDOR FINAL" : nombreConsumidor.trim());
+            preparedStatement.setString(3, nit == null || nit.isBlank() ? "CF" : nit.trim());
+            preparedStatement.executeUpdate();
+            try (ResultSet clavesGeneradas = preparedStatement.getGeneratedKeys()) {
+                if (clavesGeneradas.next()) {
+                    return clavesGeneradas.getInt(1);
+                }
+            }
+        }
+        throw new SQLException("No se pudo obtener el número de la factura.");
+    }
+
     private Factura crearFactura(ResultSet resultSet) throws SQLException{
         int idFactura = resultSet.getInt("idFactura");
         int idPago = resultSet.getInt("idPago");

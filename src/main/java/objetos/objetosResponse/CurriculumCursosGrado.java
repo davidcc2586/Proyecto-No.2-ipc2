@@ -4,6 +4,9 @@ public class CurriculumCursosGrado {
     private int idGrado;
     private int idCurso;
 
+    public CurriculumCursosGrado(){
+
+    }
     public CurriculumCursosGrado(int idGrado, int idCurso) {
         this.idGrado = idGrado;
         this.idCurso = idCurso;

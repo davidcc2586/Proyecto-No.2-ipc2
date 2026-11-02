@@ -10,6 +10,10 @@ public class Actividad {
     private double ponderacion;
     private TipoActividad tipoActividad;
 
+    public Actividad(){
+
+    }
+
     public Actividad(int idActividad, int idSeccion, int idCurso, String nombreActividad, double ponderacion, TipoActividad tipoActividad) {
         this.idActividad = idActividad;
         this.idSeccion = idSeccion;

@@ -4,6 +4,9 @@ public class AsignacionEstudiantes {
     private int idSeccion;
     private int isEstudiante;
 
+    public AsignacionEstudiantes(){
+
+    }
     public AsignacionEstudiantes(int idSeccion, int isEstudiante) {
         this.idSeccion = idSeccion;
         this.isEstudiante = isEstudiante;

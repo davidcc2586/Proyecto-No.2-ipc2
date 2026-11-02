@@ -5,6 +5,7 @@ import objetos.objetosRequest.GradoActualizarRequest;
 import objetos.objetosRequest.GradoRequest;
 import objetos.objetosResponse.Grado;
 import objetos.objetosResponse.SelectGradosResponse;
+import objetos.objetosResponse.PaginaResponse;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -15,6 +16,11 @@ public class GradoServicio {
     public List<Grado> catalogo() throws SQLException{
         GradoDB gradoDB = new GradoDB();
         return gradoDB.todosLosGrados();
+    }
+
+    public PaginaResponse<Grado> catalogoPaginado(int pagina, int tamano) throws SQLException {
+        GradoDB gradoDB = new GradoDB();
+        return gradoDB.gradosPaginados(pagina, tamano);
     }
 
     public void nuevoGrado(GradoRequest grado) throws SQLException{

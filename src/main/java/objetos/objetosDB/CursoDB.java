@@ -2,6 +2,7 @@ package objetos.objetosDB;
 
 import objetos.enums.Estado;
 import objetos.objetosResponse.Curso;
+import objetos.objetosResponse.PaginaResponse;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -27,6 +28,32 @@ public class CursoDB {
         }
         return cursos;
     }
+
+    public PaginaResponse<Curso> cursosDisponiblesPaginados(String estado, int pagina, int tamano) throws SQLException {
+        int offset = new objetos.Paginacion().calcularDesplazamiento(pagina, tamano);
+        List<Curso> cursos = new ArrayList<>();
+        int totalElementos = 0;
+        try (Connection connection = ConnectionDB.getConexion();
+             PreparedStatement conteo = connection.prepareStatement("SELECT COUNT(*) FROM Curso WHERE estado = ?")) {
+            conteo.setString(1, estado);
+            try (ResultSet resultado = conteo.executeQuery()) {
+                if (resultado.next()) {
+                    totalElementos = resultado.getInt(1);
+                }
+            }
+            try (PreparedStatement consulta = connection.prepareStatement("SELECT * FROM Curso WHERE estado = ? ORDER BY idCurso LIMIT ? OFFSET ?")) {
+                consulta.setString(1, estado);
+                consulta.setInt(2, tamano);
+                consulta.setInt(3, offset);
+                try (ResultSet resultado = consulta.executeQuery()) {
+                    while (resultado.next()) {
+                        cursos.add(crearCurso(resultado));
+                    }
+                }
+            }
+        }
+        return new PaginaResponse<>(cursos, pagina, tamano, totalElementos);
+    }
     public List<Curso> cursosDeUsuarios(int id, boolean esEstudiante) throws SQLException {
         List<Curso> cursoResponses = new ArrayList<>();
 
@@ -48,6 +75,43 @@ public class CursoDB {
         }
 
         return cursoResponses;
+    }
+
+    public PaginaResponse<Curso> cursosDeUsuariosPaginados(int id, boolean esEstudiante, int pagina, int tamano) throws SQLException {
+        int offset = new objetos.Paginacion().calcularDesplazamiento(pagina, tamano);
+        List<Curso> cursos = new ArrayList<>();
+        int totalElementos = 0;
+        String sqlConteo;
+        String sqlCursos;
+
+        if (esEstudiante) {
+            sqlConteo = "SELECT COUNT(DISTINCT curso.idCurso) FROM Estudiante estudiante JOIN AsignacionEstudiantes asignacion ON estudiante.idEstudiante = asignacion.idEstudiante JOIN Seccion seccion ON asignacion.idSeccion = seccion.idSeccion JOIN CurriculumCursosGrado curriculum ON seccion.idGrado = curriculum.idGrado JOIN Curso curso ON curriculum.idCurso = curso.idCurso WHERE estudiante.idEstudiante = ?";
+            sqlCursos = "SELECT DISTINCT curso.* FROM Estudiante estudiante JOIN AsignacionEstudiantes asignacion ON estudiante.idEstudiante = asignacion.idEstudiante JOIN Seccion seccion ON asignacion.idSeccion = seccion.idSeccion JOIN CurriculumCursosGrado curriculum ON seccion.idGrado = curriculum.idGrado JOIN Curso curso ON curriculum.idCurso = curso.idCurso WHERE estudiante.idEstudiante = ? ORDER BY curso.idCurso LIMIT ? OFFSET ?";
+        } else {
+            sqlConteo = "SELECT COUNT(DISTINCT curso.idCurso) FROM Curso curso JOIN AsignacionMaestrosSeccion asignacion ON curso.idCurso = asignacion.idCurso WHERE asignacion.idMaestro = ?";
+            sqlCursos = "SELECT DISTINCT curso.* FROM Curso curso JOIN AsignacionMaestrosSeccion asignacion ON curso.idCurso = asignacion.idCurso WHERE asignacion.idMaestro = ? ORDER BY curso.idCurso LIMIT ? OFFSET ?";
+        }
+
+        try (Connection connection = ConnectionDB.getConexion();
+             PreparedStatement conteo = connection.prepareStatement(sqlConteo)) {
+            conteo.setInt(1, id);
+            try (ResultSet resultado = conteo.executeQuery()) {
+                if (resultado.next()) {
+                    totalElementos = resultado.getInt(1);
+                }
+            }
+            try (PreparedStatement consulta = connection.prepareStatement(sqlCursos)) {
+                consulta.setInt(1, id);
+                consulta.setInt(2, tamano);
+                consulta.setInt(3, offset);
+                try (ResultSet resultado = consulta.executeQuery()) {
+                    while (resultado.next()) {
+                        cursos.add(crearCurso(resultado));
+                    }
+                }
+            }
+        }
+        return new PaginaResponse<>(cursos, pagina, tamano, totalElementos);
     }
 
     public Optional<Curso> obtenerCurso(int idCurso) throws SQLException{

@@ -6,6 +6,10 @@ public class ConfiguracionColegio {
     private int anioLectivo;
     private Estado estado;
 
+    public ConfiguracionColegio(){
+
+    }
+
     public ConfiguracionColegio(int anioLectivo, Estado estado) {
         this.anioLectivo = anioLectivo;
         this.estado = estado;

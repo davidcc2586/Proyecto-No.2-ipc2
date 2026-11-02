@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="historial_pagos" pageWidth="595" pageHeight="842"
+              columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20"
+              whenNoDataType="NoDataSection">
+    <style name="ReportTitle" forecolor="#263238" fontName="DejaVu Sans" fontSize="18" isBold="true"/>
+    <style name="ColumnHeader" mode="Opaque" backcolor="#CACED0" forecolor="#333333" fontName="DejaVu Sans" fontSize="8" isBold="true">
+        <box><pen lineWidth="0.5" lineColor="#777777"/></box>
+    </style>
+    <style name="DetailRow" mode="Opaque" backcolor="#FFFFFF" fontName="DejaVu Sans" fontSize="8">
+        <box><bottomPen lineWidth="0.4" lineColor="#BFC3C5"/></box>
+        <conditionalStyle>
+            <conditionExpression><![CDATA[$V{REPORT_COUNT}%2 == 0]]></conditionExpression>
+            <style backcolor="#EEEFF0"/>
+        </conditionalStyle>
+    </style>
+    <parameter name="nombreEstudiante" class="java.lang.String"/>
+    <parameter name="rangoFechas" class="java.lang.String"/>
+    <parameter name="totalPagado" class="java.lang.Double"/>
+    <parameter name="mesesPendientes" class="java.lang.String"/>
+    <field name="fecha" class="java.lang.String"/>
+    <field name="tipoPago" class="java.lang.String"/>
+    <field name="cantidad" class="java.lang.Double"/>
+    <field name="descripcion" class="java.lang.String"/>
+    <field name="factura" class="java.lang.String"/>
+    <title>
+        <band height="164">
+            <staticText>
+                <reportElement x="0" y="0" width="330" height="22"/>
+                <textElement><font fontName="DejaVu Sans" size="16" isBold="true"/></textElement>
+                <text><![CDATA[Colegio Prestigioso]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="0" y="24" width="330" height="15"/>
+                <textElement><font fontName="DejaVu Sans" size="9"/></textElement>
+                <text><![CDATA[Plataforma de gestión escolar]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="430" y="2" width="45" height="16"/>
+                <textElement textAlignment="Right"><font fontName="DejaVu Sans" size="9" isBold="true"/></textElement>
+                <text><![CDATA[Fecha:]]></text>
+            </staticText>
+            <textField pattern="dd/MM/yyyy HH:mm">
+                <reportElement x="480" y="2" width="75" height="16"/>
+                <textElement textAlignment="Right"><font fontName="DejaVu Sans" size="8"/></textElement>
+                <textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+            </textField>
+            <line><reportElement x="0" y="47" width="555" height="1" forecolor="#777777"/></line>
+            <staticText>
+                <reportElement x="0" y="57" width="300" height="22"/>
+                <textElement><font fontName="DejaVu Sans" size="13" isBold="true"/></textElement>
+                <text><![CDATA[HISTORIAL DE PAGOS]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="0" y="88" width="72" height="16"/>
+                <textElement><font fontName="DejaVu Sans" size="9" isBold="true"/></textElement>
+                <text><![CDATA[Estudiante:]]></text>
+            </staticText>
+            <textField isBlankWhenNull="true">
+                <reportElement x="76" y="88" width="220" height="16"/>
+                <textElement><font fontName="DejaVu Sans" size="9"/></textElement>
+                <textFieldExpression><![CDATA[$P{nombreEstudiante}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="0" y="108" width="72" height="16"/>
+                <textElement><font fontName="DejaVu Sans" size="9" isBold="true"/></textElement>
+                <text><![CDATA[Período:]]></text>
+            </staticText>
+            <textField isBlankWhenNull="true">
+                <reportElement x="76" y="108" width="220" height="16"/>
+                <textElement><font fontName="DejaVu Sans" size="9"/></textElement>
+                <textFieldExpression><![CDATA[$P{rangoFechas}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="0" y="128" width="112" height="16"/>
+                <textElement><font fontName="DejaVu Sans" size="9" isBold="true"/></textElement>
+                <text><![CDATA[Colegiaturas pendientes:]]></text>
+            </staticText>
+            <textField isBlankWhenNull="true">
+                <reportElement x="116" y="128" width="439" height="20"/>
+                <textElement><font fontName="DejaVu Sans" size="8"/></textElement>
+                <textFieldExpression><![CDATA[$P{mesesPendientes}]]></textFieldExpression>
+            </textField>
+            <line><reportElement x="0" y="157" width="555" height="1" forecolor="#777777"/></line>
+        </band>
+    </title>
+    <columnHeader>
+        <band height="25">
+            <staticText><reportElement style="ColumnHeader" x="0" y="0" width="58" height="25"/><textElement verticalAlignment="Middle"/><text><![CDATA[Fecha]]></text></staticText>
+            <staticText><reportElement style="ColumnHeader" x="58" y="0" width="78" height="25"/><textElement verticalAlignment="Middle"/><text><![CDATA[Concepto]]></text></staticText>
+            <staticText><reportElement style="ColumnHeader" x="136" y="0" width="76" height="25"/><textElement textAlignment="Right" verticalAlignment="Middle"/><text><![CDATA[Cantidad]]></text></staticText>
+            <staticText><reportElement style="ColumnHeader" x="212" y="0" width="269" height="25"/><textElement verticalAlignment="Middle"/><text><![CDATA[Descripción]]></text></staticText>
+            <staticText><reportElement style="ColumnHeader" x="481" y="0" width="74" height="25"/><textElement verticalAlignment="Middle"/><text><![CDATA[Factura]]></text></staticText>
+        </band>
+    </columnHeader>
+    <detail>
+        <band height="24">
+            <textField isBlankWhenNull="true"><reportElement style="DetailRow" x="0" y="0" width="58" height="24"/><textElement verticalAlignment="Middle"/><textFieldExpression><![CDATA[$F{fecha}]]></textFieldExpression></textField>
+            <textField isBlankWhenNull="true"><reportElement style="DetailRow" x="58" y="0" width="78" height="24"/><textElement verticalAlignment="Middle"/><textFieldExpression><![CDATA[$F{tipoPago}]]></textFieldExpression></textField>
+            <textField pattern="Q #,##0.00"><reportElement style="DetailRow" x="136" y="0" width="76" height="24"/><textElement textAlignment="Right" verticalAlignment="Middle"/><textFieldExpression><![CDATA[$F{cantidad}]]></textFieldExpression></textField>
+            <textField isBlankWhenNull="true"><reportElement style="DetailRow" x="212" y="0" width="269" height="24"/><textElement verticalAlignment="Middle"/><textFieldExpression><![CDATA[$F{descripcion}]]></textFieldExpression></textField>
+            <textField isBlankWhenNull="true"><reportElement style="DetailRow" x="481" y="0" width="74" height="24"/><textElement verticalAlignment="Middle"/><textFieldExpression><![CDATA[$F{factura}]]></textFieldExpression></textField>
+        </band>
+    </detail>
+    <lastPageFooter>
+        <band height="34">
+            <staticText>
+                <reportElement mode="Opaque" x="0" y="8" width="555" height="22" backcolor="#E6E8E9"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="DejaVu Sans" size="9" isBold="true"/></textElement>
+                <text><![CDATA[¡Gracias por su pago! · Colegio Prestigioso]]></text>
+            </staticText>
+        </band>
+    </lastPageFooter>
+    <summary>
+        <band height="38">
+            <line><reportElement x="0" y="4" width="555" height="1" forecolor="#777777"/></line>
+            <textField>
+                <reportElement x="275" y="11" width="280" height="20"/>
+                <textElement textAlignment="Right"><font fontName="DejaVu Sans" size="11" isBold="true"/></textElement>
+                <textFieldExpression><![CDATA["Total pagado: " + new java.text.DecimalFormat("Q #,##0.00").format($P{totalPagado})]]></textFieldExpression>
+            </textField>
+        </band>
+    </summary>
+    <noData>
+        <band height="28">
+            <staticText><reportElement x="0" y="5" width="555" height="20"/><textElement><font fontName="DejaVu Sans" size="9"/></textElement><text><![CDATA[No hay pagos registrados para el período indicado.]]></text></staticText>
+        </band>
+    </noData>
+</jasperReport>

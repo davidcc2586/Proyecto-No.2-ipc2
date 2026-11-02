@@ -3,8 +3,8 @@ package objetos.objetosDB;
 import objetos.objetosRequest.SeccionActualizarRequest;
 import objetos.objetosRequest.SeccionRequest;
 import objetos.objetosResponse.Seccion;
+import objetos.objetosResponse.PaginaResponse;
 
-import javax.swing.text.html.Option;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -27,6 +27,32 @@ public class SeccionDB {
             }
         }
         return secciones;
+    }
+
+    public PaginaResponse<Seccion> seccionesGradoPaginadas(int idGrado, int pagina, int tamano) throws SQLException {
+        int offset = new objetos.Paginacion().calcularDesplazamiento(pagina, tamano);
+        List<Seccion> secciones = new ArrayList<>();
+        int totalElementos = 0;
+        try (Connection connection = ConnectionDB.getConexion();
+             PreparedStatement conteo = connection.prepareStatement("SELECT COUNT(*) FROM Seccion WHERE idGrado = ?")) {
+            conteo.setInt(1, idGrado);
+            try (ResultSet resultado = conteo.executeQuery()) {
+                if (resultado.next()) {
+                    totalElementos = resultado.getInt(1);
+                }
+            }
+            try (PreparedStatement consulta = connection.prepareStatement("SELECT * FROM Seccion WHERE idGrado = ? ORDER BY idSeccion LIMIT ? OFFSET ?")) {
+                consulta.setInt(1, idGrado);
+                consulta.setInt(2, tamano);
+                consulta.setInt(3, offset);
+                try (ResultSet resultado = consulta.executeQuery()) {
+                    while (resultado.next()) {
+                        secciones.add(crearSeccion(resultado));
+                    }
+                }
+            }
+        }
+        return new PaginaResponse<>(secciones, pagina, tamano, totalElementos);
     }
 
     public void insertarNuevaSeccion(SeccionRequest seccion) throws SQLException{
@@ -65,6 +91,24 @@ public class SeccionDB {
         return seccion;
     }
 
+    public boolean existeSeccion(SeccionRequest seccion) throws SQLException {
+        String sqlConsulta = "SELECT COUNT(*) FROM Seccion WHERE idGrado = ? AND anio = ? AND seccion = ?";
+        try (Connection connection = ConnectionDB.getConexion();
+             PreparedStatement preparedStatement = connection.prepareStatement(sqlConsulta)) {
+
+            preparedStatement.setInt(1, Integer.parseInt(seccion.getIdGrado()));
+            preparedStatement.setInt(2, Integer.parseInt(seccion.getAnio()));
+            preparedStatement.setString(3, seccion.getNombreSeccion());
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    int conteo = resultSet.getInt(1);
+                    return conteo > 0;
+                }
+                return false;
+            }
+        }
+    }
     public Seccion crearSeccion(ResultSet resultSet) throws SQLException{
         int idSeccion = resultSet.getInt("idSeccion");
         int idGrado = resultSet.getInt("idGrado");

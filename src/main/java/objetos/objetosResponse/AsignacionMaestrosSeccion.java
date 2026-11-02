@@ -5,6 +5,10 @@ public class AsignacionMaestrosSeccion {
     private int idMaestro;
     private int idCurso;
 
+    public AsignacionMaestrosSeccion(){
+
+    }
+
     public AsignacionMaestrosSeccion(int idSeccion, int idMaestro, int idCurso) {
         this.idSeccion = idSeccion;
         this.idMaestro = idMaestro;

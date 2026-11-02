@@ -7,6 +7,10 @@ public class PrestamoLibroRequest {
     private String fechaPrestamo;
     private String fechaEstimadaDevolucion;
 
+    public PrestamoLibroRequest(){
+
+    }
+
     public PrestamoLibroRequest(String idLibro, String idEstudiante, String costoDia, String fechaPrestamo, String fechaEstimadaDevolucion) {
         this.idLibro = idLibro;
         this.idEstudiante = idEstudiante;

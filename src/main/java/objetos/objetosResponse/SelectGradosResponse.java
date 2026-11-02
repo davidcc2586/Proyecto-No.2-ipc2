@@ -4,6 +4,10 @@ public class SelectGradosResponse {
     private int idGrado;
     private String nombreGrado;
 
+    public SelectGradosResponse(){
+
+    }
+
     public SelectGradosResponse(int idGrado, String nombreGrado) {
         this.idGrado = idGrado;
         this.nombreGrado = nombreGrado;

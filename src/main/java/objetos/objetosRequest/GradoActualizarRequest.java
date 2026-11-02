@@ -7,6 +7,9 @@ public class GradoActualizarRequest {
     private String idCarrera;
     private String idGrado;
 
+    public GradoActualizarRequest(){
+
+    }
     public GradoActualizarRequest(String nombreGrado, String gradoColegio, String idCarrera, String idGrado) {
         this.nombreGrado = nombreGrado;
         this.gradoColegio = gradoColegio;

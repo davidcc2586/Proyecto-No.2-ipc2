@@ -20,8 +20,8 @@ public class PagoResource {
     public Response registrarPago(PagoRequest pagoRequest){
         try {
             PagoServicio pagoServicio = new PagoServicio();
-            pagoServicio.registrarPago(pagoRequest);
-            return Response.ok().entity("{\"mensaje\": \"Pago registrado correctamente\"}").build();
+            int idFactura = pagoServicio.registrarPago(pagoRequest);
+            return Response.ok().entity("{\"mensaje\": \"Pago registrado y factura emitida correctamente\", \"idFactura\": " + idFactura + "}").build();
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\": \"Error en el servidor\"}").build();
         } catch (ValidacionException e) {
@@ -38,6 +38,17 @@ public class PagoResource {
             return Response.ok(solvencia).build();
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\": \"" + e.getMessage() + "\"}").build();
+        }
+    }
+
+    @GET
+    @Path("estadoCuenta/{idEstudiante}")
+    public Response estadoCuenta(@PathParam("idEstudiante") int idEstudiante) {
+        try {
+            PagoServicio pagoServicio = new PagoServicio();
+            return Response.ok(pagoServicio.estadoCuenta(idEstudiante)).build();
+        } catch (SQLException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\": \"No se pudo consultar el estado de cuenta\"}").build();
         }
     }
 }

@@ -6,6 +6,7 @@ import objetos.objetosRequest.GradoRequest;
 import objetos.objetosResponse.AsignacionEstudiantes;
 import objetos.objetosResponse.Grado;
 import objetos.objetosResponse.Seccion;
+import objetos.objetosResponse.PaginaResponse;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -31,7 +32,41 @@ public class GradoDB {
 
         return gradoResponses;
     }
+
+    public PaginaResponse<Grado> gradosPaginados(int pagina, int tamano) throws SQLException {
+        int offset = new objetos.Paginacion().calcularDesplazamiento(pagina, tamano);
+        List<Grado> grados = new ArrayList<>();
+        int totalElementos = 0;
+        try (Connection connection = ConnectionDB.getConexion();
+             PreparedStatement conteo = connection.prepareStatement("SELECT COUNT(*) FROM Grado")) {
+            try (ResultSet resultado = conteo.executeQuery()) {
+                if (resultado.next()) {
+                    totalElementos = resultado.getInt(1);
+                }
+            }
+            try (PreparedStatement consulta = connection.prepareStatement("SELECT * FROM Grado ORDER BY idGrado LIMIT ? OFFSET ?")) {
+                consulta.setInt(1, tamano);
+                consulta.setInt(2, offset);
+                try (ResultSet resultado = consulta.executeQuery()) {
+                    while (resultado.next()) {
+                        grados.add(crearGrado(resultado));
+                    }
+                }
+            }
+        }
+        return new PaginaResponse<>(grados, pagina, tamano, totalElementos);
+    }
     public void ingresarNuevoGrado(GradoRequest grado) throws SQLException{
+        if(grado.getIdCarrera().equalsIgnoreCase("0")){
+            String sqlIngresarGrado = "INSERT INTO Grado(nombreGrado, grado) VALUES(?,?)";
+            try (Connection connection = ConnectionDB.getConexion();
+                 PreparedStatement preparedStatement = connection.prepareStatement(sqlIngresarGrado)){
+                preparedStatement.setString(1, grado.getNombreGrado());
+                preparedStatement.setString(2, grado.getGradoColegio());
+                preparedStatement.executeUpdate();
+            }
+            return;
+        }
         String sqlIngresarGrado = "INSERT INTO Grado(nombreGrado, grado, idCarrera) VALUES(?,?,?)";
         try (Connection connection = ConnectionDB.getConexion();
              PreparedStatement preparedStatement = connection.prepareStatement(sqlIngresarGrado)){

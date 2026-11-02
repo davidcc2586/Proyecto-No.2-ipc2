@@ -20,6 +20,9 @@ public class Solvencia {
         this.mes = mes;
     }
 
+    public Solvencia(){
+
+    }
     public String getEncabezado() {
         return encabezado;
     }

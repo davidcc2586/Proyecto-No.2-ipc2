@@ -3,6 +3,7 @@ package objetos.objetosDB;
 import objetos.objetosRequest.CurriculumCursosGradoRequest;
 import objetos.objetosResponse.CurriculumCursosGrado;
 import objetos.objetosResponse.Curso;
+import objetos.objetosResponse.PaginaResponse;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -27,6 +28,33 @@ public class CurriculumCursosGradoDB {
         return cursoResponses;
     }
 
+    public PaginaResponse<Curso> cursosCurriculumGradoPaginados(int idGrado, int pagina, int tamano) throws SQLException {
+        int desplazamiento = new objetos.Paginacion().calcularDesplazamiento(pagina, tamano);
+        List<Curso> cursos = new ArrayList<>();
+        int totalElementos = 0;
+        try (Connection connection = ConnectionDB.getConexion();
+             PreparedStatement conteo = connection.prepareStatement("SELECT COUNT(*) FROM CurriculumCursosGrado WHERE idGrado = ?")) {
+            conteo.setInt(1, idGrado);
+            try (ResultSet resultado = conteo.executeQuery()) {
+                if (resultado.next()) {
+                    totalElementos = resultado.getInt(1);
+                }
+            }
+            String sql = "SELECT curso.* FROM CurriculumCursosGrado curriculum JOIN Curso curso ON curriculum.idCurso = curso.idCurso WHERE curriculum.idGrado = ? ORDER BY curso.idCurso LIMIT ? OFFSET ?";
+            try (PreparedStatement consulta = connection.prepareStatement(sql)) {
+                consulta.setInt(1, idGrado);
+                consulta.setInt(2, tamano);
+                consulta.setInt(3, desplazamiento);
+                try (ResultSet resultado = consulta.executeQuery()) {
+                    while (resultado.next()) {
+                        cursos.add(new Curso(resultado.getInt("idCurso"), resultado.getString("nombreCurso")));
+                    }
+                }
+            }
+        }
+        return new PaginaResponse<>(cursos, pagina, tamano, totalElementos);
+    }
+
     private List<CurriculumCursosGrado> curriculumGrado(int idGrado) throws SQLException {
         List<CurriculumCursosGrado> CurriculumsCursosGrado = new ArrayList<>();
         String sqlSolicitarCurriculumCursosGrado = "SELECT * FROM CurriculumCursosGrado WHERE idGrado = ?";
@@ -48,6 +76,22 @@ public class CurriculumCursosGradoDB {
             preparedStatement.setInt(1, Integer.parseInt(curriculumCursosGrado.getIdGrado()));
             preparedStatement.setInt(2, Integer.parseInt(curriculumCursosGrado.getIdCurso()));
             preparedStatement.executeUpdate();
+        }
+    }
+
+    public Boolean existeAsignacion(CurriculumCursosGradoRequest curriculumCursosGradoRequest) throws SQLException{
+        String sql = "SELECT COUNT(*) FROM CurriculumCursosGrado WHERE idGrado = ? ANd idCurso = ?";
+        try (Connection connection = ConnectionDB.getConexion();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+            preparedStatement.setInt(1, Integer.parseInt(curriculumCursosGradoRequest.getIdGrado()));
+            preparedStatement.setInt(2, Integer.parseInt(curriculumCursosGradoRequest.getIdCurso()));
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    int conteo = resultSet.getInt(1);
+                    return conteo > 0;
+                }
+                return false;
+            }
         }
     }
     private CurriculumCursosGrado crearCurriculumCursosGrado(ResultSet resultSet) throws SQLException{

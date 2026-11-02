@@ -1,5 +1,6 @@
 package objetos.objetosResponse;
 
+import objetos.enums.Estado;
 import objetos.enums.RolUsuario;
 
 import java.time.LocalDate;
@@ -12,11 +13,12 @@ public class Usuario {
     private LocalDate fechaNacimiento;
     private String usuario;
     private String clave;
+    private Estado estado;
     private RolUsuario rolUsuario;
     private LocalDate fechaContratacion;
     private double salario;
 
-    public Usuario(int idUsuario, String cui, String nombre, String apellido, LocalDate fechaNacimiento, String usuario, String clave, RolUsuario rolUsuario, LocalDate fechaContratacion, double salario) {
+    public Usuario(int idUsuario, String cui, String nombre, String apellido, LocalDate fechaNacimiento, String usuario, String clave, Estado estado, RolUsuario rolUsuario, LocalDate fechaContratacion, double salario) {
         this.idUsuario = idUsuario;
         this.cui = cui;
         this.nombre = nombre;
@@ -24,9 +26,14 @@ public class Usuario {
         this.fechaNacimiento = fechaNacimiento;
         this.usuario = usuario;
         this.clave = clave;
+        this.estado = estado;
         this.rolUsuario = rolUsuario;
         this.fechaContratacion = fechaContratacion;
         this.salario = salario;
+    }
+
+    public Usuario(){
+
     }
 
     public int getIdUsuario() {
@@ -55,6 +62,10 @@ public class Usuario {
 
     public String getClave() {
         return clave;
+    }
+
+    public Estado getEstado() {
+        return estado;
     }
 
     public RolUsuario getRolUsuario() {

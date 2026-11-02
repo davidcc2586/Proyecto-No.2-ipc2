@@ -4,6 +4,9 @@ import clasesAuxiliares.CurriculumCursosGradoServicio;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import objetos.exceptions.ValidacionException;
+import objetos.objetosResponse.Curso;
+import objetos.objetosResponse.PaginaResponse;
 import objetos.objetosRequest.CurriculumCursosGradoRequest;
 
 import java.sql.SQLException;
@@ -24,6 +27,20 @@ public class CurriculumCursosGradoResource {
         }
     }
 
+        @GET
+        @Path("catalogoPaginado/{idGrado}")
+        public Response cursosGradoPaginados(@PathParam("idGrado") int idGrado, @QueryParam("pagina") @DefaultValue("0") int pagina, @QueryParam("tamano") @DefaultValue("10") int tamano) {
+            try {
+                CurriculumCursosGradoServicio servicio = new CurriculumCursosGradoServicio();
+                PaginaResponse<Curso> cursos = servicio.catalogoPaginado(idGrado, pagina, tamano);
+                return Response.ok(cursos).build();
+            } catch (IllegalArgumentException e) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\": \"" + e.getMessage() + "\"}").build();
+            } catch (SQLException e) {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\": \"Error interno en el servidor\"}").build();
+            }
+    }
+
     @POST
     @Path("asignarCursoGrado")
     public Response asignarCursoGrado(CurriculumCursosGradoRequest curriculumCursosGradoRequest){
@@ -33,6 +50,8 @@ public class CurriculumCursosGradoResource {
             return Response.ok().build();
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\": \"Error interno en el servidor\"}").build();
+        }catch (ValidacionException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\": \"" + e.getMessage() + "\"}").build();
         }
     }
 }

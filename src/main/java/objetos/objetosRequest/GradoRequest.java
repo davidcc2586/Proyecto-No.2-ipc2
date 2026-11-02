@@ -5,6 +5,10 @@ public class GradoRequest {
     private String gradoColegio;
     private String idCarrera;
 
+    public GradoRequest(){
+
+    }
+
     public GradoRequest(String nombreGrado, String gradoColegio, String idCarrera) {
         this.nombreGrado = nombreGrado;
         this.gradoColegio = gradoColegio;

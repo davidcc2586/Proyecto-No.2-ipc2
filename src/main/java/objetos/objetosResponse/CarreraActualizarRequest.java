@@ -6,6 +6,10 @@ public class CarreraActualizarRequest {
     private String idCarrera;
     private String nombreCarrera;
 
+    public CarreraActualizarRequest(){
+
+    }
+
     public CarreraActualizarRequest(String idCarrera, String nombreCarrera) {
         this.idCarrera = idCarrera;
         this.nombreCarrera = nombreCarrera;

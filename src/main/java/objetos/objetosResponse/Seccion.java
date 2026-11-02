@@ -13,6 +13,10 @@ public class Seccion {
         this.seccion = seccion;
     }
 
+    public Seccion(){
+
+    }
+
     public int getIdSeccion() {
         return idSeccion;
     }
